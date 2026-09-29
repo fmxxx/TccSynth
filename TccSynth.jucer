@@ -27,6 +27,7 @@
               file="Source/Framework/ParameterHandler.cpp"/>
         <FILE id="Nv8Txe" name="ParameterHandler.h" compile="0" resource="0"
               file="Source/Framework/ParameterHandler.h"/>
+        <FILE id="tYOM7p" name="ParameterList.h" compile="0" resource="0" file="Source/Framework/ParameterList.h"/>
         <FILE id="L4fFRp" name="Synth.cpp" compile="1" resource="0" file="Source/Framework/Synth.cpp"/>
         <FILE id="lMLYqy" name="Synth.h" compile="0" resource="0" file="Source/Framework/Synth.h"/>
         <FILE id="SsGiJH" name="Voice.cpp" compile="1" resource="0" file="Source/Framework/Voice.cpp"/>

@@ -1,1 +1,25 @@
 
+#pragma once
+
+class Lfo {
+ public:
+  // ------ Exposed Parameters ------ //
+  float freq;
+  bool sync;
+  int shape;
+  float amplitude;  // [0,1]
+
+  float period = 0.0f;
+
+  void reset();
+  void updateParams();
+  void setsampleRate(float newsampleRate);
+  float nextSample();
+
+ private:
+  float sampleRate;
+
+  const float phaseMax = 1.0f;  // Phase goes up to this value
+  float phase;                  // [0, 1]
+  float phaseInc;               // Phase increment
+};
