@@ -31,9 +31,11 @@ class Envelope {
   void reset();
   void updateParams();
   void setsampleRate(float newsampleRate);
+
   void start();
   void release();
-  float nextSample();
+
+    float nextSample();
 
   // ------ Getters ------ //
   float getCurrentValue() const;

@@ -10,12 +10,11 @@ class Oscillator {
   float shapeMod;  // [-1 ,1]
   float volMod;    // [-1 ,1]
 
-  float midinote;
-  float period = 0.0f;
+  float phaseInc;  // Phase increment
 
   void updateParams();
   void reset();
-  void setsampleRate(float newsampleRate);
+  void newNote();
   float poly_blep(float phase, float phaseInc);
   float nextSample();
 
@@ -24,5 +23,4 @@ class Oscillator {
 
   const float phaseMax = 1.0f;  // Phase goes up to this value
   float phase;                  // [0, 1]
-  float phaseInc;               // Phase increment
 };

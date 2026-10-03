@@ -3,11 +3,14 @@
 
 class Amp {
  public:
-  float outputScale;
-  float amplitude;
+  // ------ Exposed Parameters ------ //
+  float velocitySens;
+  float volume;
+
+  float velocity;
 
   void updateParams();
-  float nextSample();
+  float nextSample(float input);
   void earProtection();
 
  private:

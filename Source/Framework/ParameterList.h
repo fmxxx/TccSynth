@@ -98,8 +98,8 @@
 // Columns: id, display, default, dest
 #define PARAM_BOOL_LIST                                                   \
   X(ampAttackFromZero, "Amp Attack From Zero", false, amp.attackFromZero) \
-  X(lfo1Sync, "LFO 1 Sync", false, lfo1.sync)                             \
-  X(lfo2Sync, "LFO 2 Sync", false, lfo2.sync)
+  X(lfo1Keytrig, "LFO 1 Keytrig", false, lfo1.keytrig)                    \
+  X(lfo2Keytrig, "LFO 2 Keytrig", false, lfo2.keytrig)
 
 // Int parameters: min/max integer, step is implied as 1.
 // Columns: id, display, min, max, default, dest

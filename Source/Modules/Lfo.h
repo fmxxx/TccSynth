@@ -5,7 +5,7 @@ class Lfo {
  public:
   // ------ Exposed Parameters ------ //
   float freq;
-  bool sync;
+  bool keytrig;
   int shape;
   float amplitude;  // [0,1]
 
