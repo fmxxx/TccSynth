@@ -19,8 +19,6 @@
         <FILE id="A6Nxt9" name="Saturator.h" compile="0" resource="0" file="Source/Modules/Saturator.h"/>
       </GROUP>
       <GROUP id="{1FD3F159-5D31-040A-0F44-08A24B463316}" name="Framework">
-        <FILE id="TMMRDP" name="MidiHandler.cpp" compile="1" resource="0" file="Source/Framework/MidiHandler.cpp"/>
-        <FILE id="tVYLoX" name="MidiHandler.h" compile="0" resource="0" file="Source/Framework/MidiHandler.h"/>
         <FILE id="HVy7Li" name="Modulations.cpp" compile="1" resource="0" file="Source/Framework/Modulations.cpp"/>
         <FILE id="iNXh7N" name="Modulations.h" compile="0" resource="0" file="Source/Framework/Modulations.h"/>
         <FILE id="tgxg8W" name="ParameterHandler.cpp" compile="1" resource="0"
