@@ -11,7 +11,7 @@
 
 struct SynthParams;
 
-float periodFromNote(float sampleRate, float midiNote, float globalTuningA4, float semitone, float cents);
+float periodFromNote(float sampleRate, float note, float globalTuningA4, float semitone, float cents);
 
 class Voice {
  public:
@@ -19,9 +19,9 @@ class Voice {
   float note;
   float velocity;
   // ------ Internal State ------ //
-  bool isActive;
-  float period;
-  float target;
+  float period;       // Samples to complete a cycle
+  float glideTarget;  // Samples target for pitch glide
+  float sampleRate;   // Gets updated on Synth::allocateResources()
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
   float envModOut = 0.0f;
@@ -44,9 +44,9 @@ class Voice {
   void reset();
 
   void updateParams(const SynthParams& newParams);
-  void updateLfos();
+  void updateSlowMods();
 
-  void start(float midiNote, int midiVelocity, float sampleRate);
+  void start(float note, int velocity);
   void release();
 
   float render();

@@ -70,14 +70,12 @@ void Voice::updateParams(const SynthParams& newParams) {
   lfo2.amplitude = p.lfo2.amplitude / 100.0f;
 
   // Modulation sum
-  osc2.volMod = p.modEnv.osc2Volume;
-  osc1.shapeMod = p.modEnv.shape1 + p.lfo1.shape1 + p.lfo2.shape1;
-  osc2.shapeMod = p.modEnv.shape2 + p.lfo2.shape2 + p.lfo2.shape2;
-  filter.cutoffFreqMod = p.lfo1.cutoffFreq + p.lfo2.cutoffFreq;
+
+  filter.cutoffFreqModAmt = p.lfo1.cutoffFreq + p.lfo2.cutoffFreq;
 
   // After the assignments above:
-  osc1.updateParams();
-  osc2.updateParams();
+  // osc1.updateParams();
+  // osc2.updateParams();
   filter.updateParams();
   amp.updateParams();
   envAmp.updateParams();
@@ -87,7 +85,7 @@ void Voice::updateParams(const SynthParams& newParams) {
   lfo2.updateParams();
 }
 
-void Voice::updateLfos() {
+void Voice::updateSlowMods() {
   envFilterOut = envFilter.nextSample();
   envModOut = envMod.nextSample();
 
@@ -95,17 +93,30 @@ void Voice::updateLfos() {
   lfo2Out = lfo2.nextSample();
 
   // TODO apply modulation to parameters
+  // --- Osc 1 --- //
+  float osc1ShapeModSum = (p.modEnv.shape1 * envModOut + p.lfo1.shape1 * lfo1Out + p.lfo2.shape1 * lfo2Out);
+  osc1.applyModulations(osc1ShapeModSum, 0);
+
+  // --- Osc 2 --- //
+  float osc2ShapeModSum = (p.modEnv.shape2 * envModOut + p.lfo1.shape2 * lfo1Out + p.lfo2.shape2 * lfo2Out);
+  float osc2VolSum = p.modEnv.osc2Volume * envModOut;
+  osc2.applyModulations(osc2ShapeModSum, osc2VolSum);
+
+  // --- Filter --- //
+
+  // --- Global --- //
+  float voiceFreqModSum = (p.lfo1.voiceFreq * lfo1Out + p.lfo2.voiceFreq * lfo2Out + p.modEnv.voiceFreq * envModOut);
+  // TODO: Apply modulation to voice by changing the A4 freq
 }
 
-void Voice::start(float midiNote, int midiVelocity, float sampleRate) {
-  float periodOsc1 = periodFromNote(sampleRate, midiNote, p.global.tuning, p.osc1.semitone, p.osc1.cents);
+void Voice::start(float note, int velocity) {
+  float periodOsc1 = periodFromNote(sampleRate, note, p.global.tuning, p.osc1.semitone, p.osc1.cents);
 
-  float periodOsc2 = periodFromNote(sampleRate, midiNote, p.global.tuning, p.osc2.semitone, p.osc2.cents);
+  float periodOsc2 = periodFromNote(sampleRate, note, p.global.tuning, p.osc2.semitone, p.osc2.cents);
 
-  osc1.phaseInc = periodOsc1;
+  // TODO: Figure out how implement the period function so it produces a pitch
   osc1.newNote();
 
-  osc2.phaseInc = periodOsc2;
   osc2.newNote();
 
   envAmp.start();
@@ -126,9 +137,9 @@ float Voice::render() {
 
   return envOut;
 }
-
-float periodFromNote(float sampleRate, float midiNote, float globalTuningA4, float semitone, float cents) {
-  float semitonesFromA4 = (midiNote - 69.0f) + semitone + (cents / 100.0f);
+// How many samples for the wave to go through one cycle
+float periodFromNote(float sampleRate, float note, float globalTuningA4, float semitone, float cents) {
+  float semitonesFromA4 = (note - 69.0f) + semitone + (cents / 100.0f);
   float freqHz = globalTuningA4 * std::exp2(semitonesFromA4 / 12.0f);
 
   return sampleRate / freqHz;

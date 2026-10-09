@@ -1,6 +1,8 @@
 // This class contains the variables for each parameter
 // To be used in Synth.cpp and passed down to the voices
 
+#pragma once
+
 struct SynthParams {
   struct {
     float semitone, cents, shape, volume;

@@ -19,7 +19,6 @@ class Envelope {
   float decayMs;
   float sustain;  //[0, 1]
   float releaseMs;
-  float velocitySens;  // 0: Always low, 1: Vel 1 = near silence
   bool attackFromZero = false;
 
   // ------ Modulations ------ //
@@ -35,18 +34,19 @@ class Envelope {
   void start();
   void release();
 
-    float nextSample();
+  float nextSample();
 
   // ------ Getters ------ //
   float getCurrentValue() const;
   EnvelopeStage getStage() const;
   bool isActive() const;
+  bool isAttack() const;
 
  private:
   float sampleRate;
+  float currentValue;
 
   EnvelopeStage currentStage;
-  float currentValue;
 
   float attackCoef = 0.0f;
   float decayCoef = 0.0f;

@@ -14,10 +14,9 @@ TccSynthAudioProcessor::TccSynthAudioProcessor()
 #endif
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-                         )
+      )
 #endif
-      ,
-      midiHandler(synth, params.apvts) {
+{
   // All parameter construction, registration and casting is done by
   // ParameterHandler's own constructor. Nothing to do here.
 }
@@ -104,8 +103,8 @@ void TccSynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   // Apply parameter changes once per block, before rendering.
   bool expected = true;
   if (params.parametersChanged.compare_exchange_strong(expected, false)) {
-    params.applyToSynth(synth);
-    synth.updateVoices();
+    params.applyToSynth(synth);  // Takes values and writes to synth
+    synth.updateVoicesParams();  // From synth to voices
   }
 
   // Get write pointers for the synth's output. The synth works in-place
@@ -117,6 +116,43 @@ void TccSynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
   // Render audio and dispatch MIDI.
   splitBufferByEvents(buffer, midiMessages);
+}
+
+void TccSynthAudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2) {
+  // Print out the MIDI message:
+  // char s[16];
+  // snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
+  // DBG(s);
+
+  // Control Change
+  /*
+  if ((data0 & 0xF0) == 0xB0) {
+    if (data1 == 0x07) {  // volume
+      float volumeCtl = float(data2) / 127.0f;
+      outputLevelParam->beginChangeGesture();
+      outputLevelParam->setValueNotifyingHost(volumeCtl);
+      outputLevelParam->endChangeGesture();
+    }
+  }
+
+  // Program Change
+  if ((data0 & 0xF0) == 0xC0) {
+    if (data1 < presets.size()) {
+      setCurrentProgram(data1);
+    }
+  }
+  */
+
+  // TODO: Write function that does the dyanmic selection
+  // Think of it a virtual cc bank where each CC is hardcoded to a parameter, when a midi note+channel message is sent
+  // it tranposese the bank up, ie
+  // if (notemessage.channel == 16 AND notemessage.note >= 0 AND
+  // notemessage.note < 8) {
+  // bank = virtualCC + notemessage.note * 8 }
+  // Maybe use a switch statement? That way the user can configure any
+  // Midi note instead of having to use 0 to 7
+
+  synth.receiveMidi(data0, data1, data2);
 }
 
 void TccSynthAudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
@@ -132,7 +168,12 @@ void TccSynthAudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffe
       bufferOffset += samplesThisSegment;
     }
 
-    midiHandler.handleMidiMetadata(metadata);
+    // Render the event (ignore sysex messages which have > 3 bytes)
+    if (metadata.numBytes <= 3) {
+      uint8_t data1 = (metadata.numBytes >= 2) ? metadata.data[1] : 0;
+      uint8_t data2 = (metadata.numBytes == 3) ? metadata.data[2] : 0;
+      handleMIDI(metadata.data[0], data1, data2);
+    }
   }
 
   // Render the audio after the last MIDI event. If there were no
@@ -143,6 +184,16 @@ void TccSynthAudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffe
   }
 
   midiMessages.clear();
+}
+
+void TccSynthAudioProcessor::render(juce::AudioBuffer<float>& buffer, int sampleCount, int bufferOffset) {
+  float* outputBuffers[2] = {nullptr, nullptr};
+  outputBuffers[0] = buffer.getWritePointer(0) + bufferOffset;
+  if (getTotalNumOutputChannels() > 1) {
+    outputBuffers[1] = buffer.getWritePointer(1) + bufferOffset;
+  }
+
+  synth.render(outputBuffers, sampleCount);
 }
 
 // ------ Creates UI editor if it has one ------ //
