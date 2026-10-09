@@ -85,7 +85,7 @@
   X(velRelease, "Vel Release", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.release)                      \
                                                                                                          \
   /* -------------------- Global -------------------- */                                                 \
-  X(globalGlide, "Glide", 0.1f, 10.0f, 0.001f, 0.1f, 1.0f, "s", global.glide)                            \
+  X(globalGlide, "Glide", 0.0f, 10.0f, 0.1f, 0.0f, 1.0f, "s", global.glide)                              \
   X(globalTuning, "Global Tuning", 400.0f, 480.0f, 0.1f, 440.0f, 440.0f, "Hz", global.tuning)
 
 // Choice parameters: no range, has a list of names.
