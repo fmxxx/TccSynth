@@ -5,40 +5,69 @@
 
 struct SynthParams {
   struct {
-    float semitone, cents, shape, volume;
+    float semitone = 0.0f,
+          cents = 0.0f,
+          shape = 0.0f,
+          volume = 100.0f;
   } osc1, osc2;
 
   struct {
-    float attack, decay, sustain, release;
-    float cutoff, resonance, keytrack, envAmount;
+    float attack = 0.1f,
+          decay = 1.0f,
+          sustain = 5.0f,
+          release = 1.0f;
+    float cutoff = 20000.0f,
+          resonance = 0.0f,
+          keytrack = 0.0f,
+          envAmount = 0.0f;
   } filter;
 
   struct {
-    float attack, decay, sustain, release;
-    bool attackFromZero;
-    float velocity, volume;
+    float attack = 0.01f,
+          decay = 0.5f,
+          sustain = 5.0f,
+          release = 0.5f;
+    bool attackFromZero = false;
+    float velocity = 50.0f,
+          volume = 80.0f;
   } amp;
 
   struct {
-    float rate;
-    int shape;
-    bool keytrig;
-    float amplitude, cutoffFreq, voiceFreq, shape1, shape2;
+    float rate = 1.0f;
+    int shape = 0;
+    bool keytrig = false;
+    float amplitude = 0.0f,
+          cutoffFreq = 0.0f,
+          voiceFreq = 0.0f,
+          shape1 = 0.0f,
+          shape2 = 0.0f;
   } lfo1, lfo2;
 
   struct {
-    float attack, decay, sustain, release;
-    float osc2Volume, voiceFreq, shape1, shape2;
+    float attack = 0.01f,
+          decay = 0.5f,
+          sustain = 5.0f,
+          release = 0.5f;
+    float osc2Volume = 0.0f,
+          voiceFreq = 0.0f,
+          shape1 = 0.0f,
+          shape2 = 0.0f;
   } modEnv;
 
   struct {
-    float shape1, shape2, cutoff, resonance;
-    float attack, decay, sustain, release;
+    float shape1 = 0.0f,
+          shape2 = 0.0f,
+          cutoff = 0.0f,
+          resonance = 0.0f;
+    float attack = 0.0f,
+          decay = 0.0f,
+          sustain = 0.0f,
+          release = 0.0f;
   } vel;
 
   struct {
-    int voiceCount;
-    float glide;
-    float tuning;
+    int voiceCount = 8;
+    float glide = 0.0f;
+    float tuning = 440;
   } global;
 };
