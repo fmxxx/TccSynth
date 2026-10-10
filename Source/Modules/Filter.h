@@ -19,7 +19,7 @@ class Filter {
   float nextSample(float input);
 
  private:
-  float sampleRate;
+  float sampleRate = 44100.0f;
 
   // ------ Precomputed coefficients (calculated in updateParams) ------ //
   float g;   // tan(pi * fc / fs) — the ZDF frequency warp

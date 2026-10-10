@@ -10,6 +10,10 @@ void Lfo::updateParams() {
   phaseInc = getPeriodFromFreq(freq, sampleRate);
 }
 
+void Lfo::setSampleRate(float newSampleRate) {
+  sampleRate = newSampleRate;
+}
+
 float Lfo::nextSample() {
   // TODO: add other shapes
   // If shape = sine

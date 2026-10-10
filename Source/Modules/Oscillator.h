@@ -22,8 +22,6 @@ class Oscillator {
   float nextSample();
 
  private:
-  float sampleRate;
-
   // -------- Applied values (set by applyModulations) -------- //
   float shapeEff;
   float ampEff;
