@@ -10,8 +10,8 @@ class Filter {
   float envAmt;     // [-1, 1]
 
   // ------ Modulations (block-rate) ------ //
-  float cutoffFreqMod;  // [-1, 1]
-  float resonanceMod;   // [-1, 1]
+  float cutoffFreqModAmt;  // [-1, 1]
+  float resonanceModAmt;   // [-1, 1]
 
   void reset();
   void updateParams();
