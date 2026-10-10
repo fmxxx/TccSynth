@@ -10,7 +10,7 @@ class Amp {
   float velocity;
 
   void updateParams();
-  float nextSample(float input, float envSample);
+  float nextSample(float input, float envLevel);
   void earProtection();
 
  private:
