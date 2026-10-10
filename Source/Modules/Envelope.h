@@ -6,6 +6,7 @@
 
 enum class EnvelopeStage {
   OFF,
+  DECLICK,
   ATTACK,
   DECAY,
   SUSTAIN,
@@ -15,21 +16,21 @@ enum class EnvelopeStage {
 class Envelope {
  public:
   // ------ Exposed Parameters ------ //
-  float attackMs;
-  float decayMs;
-  float sustain;  //[0, 1]
-  float releaseMs;
+  float attackMs = 0.0f;
+  float decayMs = 0.0f;
+  float sustain = 0.0f;  //[0, 1]
+  float releaseMs = 0.0f;
   bool attackFromZero = false;
 
   // ------ Modulations ------ //
-  float attackMsMod;
-  float decayMsMod;
-  float sustainMod;  //[0, 1]
-  float releaseMsMod;
+  float attackMsMod = 0.0f;
+  float decayMsMod = 0.0f;
+  float sustainMod = 0.0f;  //[0, 1]
+  float releaseMsMod = 0.0f;
 
   void reset();
   void updateParams();
-  void setsampleRate(float newsampleRate);
+  void setSampleRate(float newSampleRate);
 
   void start();
   void release();
@@ -37,24 +38,25 @@ class Envelope {
   float nextSample();
 
   // ------ Getters ------ //
-  float getCurrentValue() const;
+  float getCurrentLevel() const;
   EnvelopeStage getStage() const;
   bool isActive() const;
   bool isAttack() const;
 
  private:
-  float sampleRate;
-  float currentValue;
+  float sampleRate = 44100.0f;
+  float level = 0.0f;
 
-  EnvelopeStage currentStage;
+  EnvelopeStage currentStage = EnvelopeStage::OFF;
 
-  float attackCoef = 0.0f;
-  float decayCoef = 0.0f;
-  float releaseCoef = 0.0f;
-  float attackTarget = 1.5f;
+  float declickMs = 5.0f;
 
-  float sustainLevel;
+  float targetLevel = 0.0f;
+  float stageIncrement = 0.0f;
 
-  // Converts milliseconds to a single-sample RC filter coefficient
-  float calculateCoef(float ms);
+  float attackTarget = 1.0f;
+
+  // Converts a level delta and duration to a single-sample increment.
+  float calcCoef(float ms, float target);
+  void attack();
 };
