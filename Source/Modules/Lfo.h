@@ -13,7 +13,6 @@ class Lfo {
 
   void reset();
   void updateParams();
-  void setsampleRate(float newsampleRate);
   float nextSample();
 
  private:
@@ -22,4 +21,6 @@ class Lfo {
   const float phaseMax = 1.0f;  // Phase goes up to this value
   float phase;                  // [0, 1]
   float phaseInc;               // Phase increment
+
+  float getPeriodFromFreq(float freq, float sampleRate);
 };
