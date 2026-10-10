@@ -15,12 +15,8 @@
         <FILE id="vhuGXU" name="Lfo.h" compile="0" resource="0" file="Source/Modules/Lfo.h"/>
         <FILE id="jzXvzx" name="Oscillator.cpp" compile="1" resource="0" file="Source/Modules/Oscillator.cpp"/>
         <FILE id="NkNTmK" name="Oscillator.h" compile="0" resource="0" file="Source/Modules/Oscillator.h"/>
-        <FILE id="HSYhdr" name="Saturator.cpp" compile="1" resource="0" file="Source/Modules/Saturator.cpp"/>
-        <FILE id="A6Nxt9" name="Saturator.h" compile="0" resource="0" file="Source/Modules/Saturator.h"/>
       </GROUP>
       <GROUP id="{1FD3F159-5D31-040A-0F44-08A24B463316}" name="Framework">
-        <FILE id="HVy7Li" name="Modulations.cpp" compile="1" resource="0" file="Source/Framework/Modulations.cpp"/>
-        <FILE id="iNXh7N" name="Modulations.h" compile="0" resource="0" file="Source/Framework/Modulations.h"/>
         <FILE id="tgxg8W" name="ParameterHandler.cpp" compile="1" resource="0"
               file="Source/Framework/ParameterHandler.cpp"/>
         <FILE id="Nv8Txe" name="ParameterHandler.h" compile="0" resource="0"
