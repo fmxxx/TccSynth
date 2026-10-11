@@ -1,6 +1,8 @@
 
 #include "Oscillator.h"
 
+#include <algorithm>
+
 // Eff means "effective", the value after all modulation is applied
 Oscillator::Oscillator()
     : shape(0.0f),
@@ -13,19 +15,8 @@ Oscillator::Oscillator()
 // --- --- Control-rate updates (called by the Voice) --- --- //
 
 void Oscillator::applyModulations(float shapeMod, float volMod) {
-  float s = shape + shapeMod;
-  if (s > 1.0f)
-    s = 1.0f;
-  else if (s < -1.0f)
-    s = -1.0f;
-  shapeEff = s;
-
-  float a = amplitude + volMod;
-  if (a > 1.0f)
-    a = 1.0f;
-  else if (a < 0.0f)
-    a = 0.0f;
-  ampEff = a;
+  shapeEff = std::clamp(shape + shapeMod, -1.0f, 1.0f);
+  ampEff = std::clamp(amplitude + volMod, 0.0f, 1.0f);
 }
 
 // --- --- Lifecycle --- --- //
