@@ -6,7 +6,6 @@ Oscillator::Oscillator()
     : shape(0.0f),
       amplitude(1.0f),
       phaseInc(0.0f),
-      sampleRate(44100.0f),
       shapeEff(0.0f),
       ampEff(1.0f),
       phase(0.0f) {}

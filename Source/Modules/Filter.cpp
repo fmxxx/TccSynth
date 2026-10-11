@@ -8,6 +8,9 @@ void Filter::reset() {
   s4 = 0.0f;
 }
 
+void Filter::setsampleRate(float newSampleRate) {
+  sampleRate = newSampleRate;
+}
 float Filter::nextSample(float input) {
   // TODO: Add filter
   return input;
