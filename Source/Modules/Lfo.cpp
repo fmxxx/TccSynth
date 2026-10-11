@@ -4,10 +4,12 @@
 #include <cmath>
 #include <iostream>
 
+#include "../Framework/Synth.h"  // Only for the CONTROL_RATE_SAMPLES
+
 void Lfo::reset() {}
 
 void Lfo::updateParams() {
-  phaseInc = getPeriodFromFreq(freq, sampleRate);
+  phaseInc = (2.0f * M_PI * freq * CONTROL_RATE_SAMPLES) / sampleRate;
 }
 
 void Lfo::setSampleRate(float newSampleRate) {
@@ -26,8 +28,4 @@ float Lfo::nextSample() {
   }
 
   return sample;
-}
-
-float Lfo::getPeriodFromFreq(float freq, float sampleRate) {
-  return (2.0f * M_PI * freq) / sampleRate;
 }
