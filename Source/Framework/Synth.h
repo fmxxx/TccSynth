@@ -8,7 +8,7 @@
 #include "Voice.h"
 
 constexpr int MAX_VOICES = 8;
-constexpr float POLY_ATTENUATION = 1 / MAX_VOICES;
+constexpr float POLY_ATTENUATION = 1.0f / static_cast<float>(MAX_VOICES);
 constexpr int CONTROL_RATE_SAMPLES = 32;
 
 class Synth {
@@ -24,23 +24,16 @@ class Synth {
   SynthParams p;
 
  private:
+  int polyphony = 8;
   Voice voices[MAX_VOICES];
-
-  float sampleRate;
 
   int controlCounter = 1;  // Keeps track of when the LFO should update
 
-  void
-  controlChange(uint8_t data1, uint8_t data2);
+  void controlChange(uint8_t data1, uint8_t data2);
   void noteOn(float note, float velocity);
   void noteOff(float note);
-  void startVoices(int voices, float note, float velocity);
-  void restartMonoVoice(float mideNote, float velocity);
 
   int findNewVoice(float note) const;
-  void shiftQueuedNotes();
-  int nextQueuedNote();
-  bool isPlayingLegatoStyle() const;
 
   // Reset unused voices when polyphony changes and update its params
   void setPolyphony(int newVoiceCount);

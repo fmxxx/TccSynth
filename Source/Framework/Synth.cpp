@@ -1,9 +1,13 @@
 #include "Synth.h"
 
 void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
-  sampleRate = static_cast<float>(sampleRateNew);
-  for (int v = 0; v < p.global.voiceCount; ++v) {
-    voices[v].sampleRate = sampleRate;
+  const float sampleRate = static_cast<float>(sampleRateNew);
+  // Sets sampleRate, initializes and updates parameters
+  // Of every voice (even unused)
+  for (int v = 0; v < MAX_VOICES; ++v) {
+    voices[v].setSampleRate(sampleRate);
+    voices[v].updateParams(p);
+    voices[v].reset();
   }
 
   controlCounter = 1;
@@ -17,6 +21,15 @@ void Synth::reset() {
   }
 };
 
+void Synth::updateVoicesParams() {
+  if (p.global.voiceCount != polyphony) {
+    setPolyphony(p.global.voiceCount);
+  }
+  for (int v = 0; v < polyphony; ++v) {
+    voices[v].updateParams(p);
+  }
+};
+
 void Synth::render(float** outputBuffers, int sampleCount) {
   float* left = outputBuffers[0];
   float* right = outputBuffers[1];
@@ -25,8 +38,8 @@ void Synth::render(float** outputBuffers, int sampleCount) {
   for (int i = 0; i < sampleCount; ++i) {
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
-      for (int v = 0; v < p.global.voiceCount; ++v) {
-        if (voices[v].envAmp.isActive()) {
+      for (int v = 0; v < polyphony; ++v) {
+        if (voices[v].isActive()) {
           voices[v].updateSlowMods();
         }
       }
@@ -35,8 +48,8 @@ void Synth::render(float** outputBuffers, int sampleCount) {
     // --- Render all active voices for this sample ---
     float sample = 0.0f;
 
-    for (int v = 0; v < p.global.voiceCount; ++v) {
-      if (voices[v].envAmp.isActive()) {
+    for (int v = 0; v < polyphony; ++v) {
+      if (voices[v].isActive()) {
         sample += voices[v].render() * POLY_ATTENUATION;  // Reduces volume so multiple voices dont make things too loud!
       }
     }
@@ -77,36 +90,20 @@ void Synth::receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2) {
   }
 }
 
+void Synth::controlChange(uint8_t data1, uint8_t data2) {}
+
 void Synth::noteOn(float note, float velocity) {
   int voice = 0;  // index of the voice to use (0 = mono voice)
 
-  if (p.global.voiceCount == 1) {  // monophonic
-    if (voices[0].note > 0) {      // legato-style playing
-      shiftQueuedNotes();
-      restartMonoVoice(note, velocity);
-      return;
-    }
-  } else {  // polyphonic
+  if (polyphony > 1) {
     voice = findNewVoice(note);
   }
 
-  startVoices(voice, note, velocity);
+  voices[voice].startNote(note, velocity);
 }
 
 void Synth::noteOff(float note) {
-  // In mono mode and the current playing note is release
-  if ((p.global.voiceCount == 1) && (voices[0].note == note)) {
-    // Find if an older note is still held down
-    int queuedNote = nextQueuedNote();
-    if (queuedNote > 0) {
-      // Set the older note to 0 and restart it
-      restartMonoVoice(queuedNote, -1);
-    }
-  }
-
-  // In poly mode or if there's no other key held in mono mode
-  for (int v = 0; v < p.global.voiceCount; ++v) {
-    // Any voices playing this note?
+  for (int v = 0; v < polyphony; ++v) {
     if (voices[v].note == note) {
       // TODO: Check for sustain pedal?
       voices[v].release();
@@ -125,7 +122,7 @@ int Synth::findNewVoice(float note) const {
   int v = 0;  // The free voice
 
   // Same note voice
-  for (int i = 0; i < p.global.voiceCount; ++i) {
+  for (int i = 0; i < polyphony; ++i) {
     if (voices[i].note == note) {
       v = i;
       return v;
@@ -133,19 +130,21 @@ int Synth::findNewVoice(float note) const {
   }
 
   // Inactive voice
-  for (int i = 0; i < p.global.voiceCount; ++i) {
-    if (!voices[i].envAmp.isActive()) {
+  for (int i = 0; i < polyphony; ++i) {
+    if (!voices[i].isActive()) {
       v = i;
       return v;
     }
   }
 
-  // Quietest non attack voice
+  // TODO: Quietest non attack voice
+  // TODO: Find actual level of the voice, since velocity scaling
+  // will make this method of find it outdated
   float l = 100.0f;
 
-  for (int i = 0; i < p.global.voiceCount; ++i) {
-    if (voices[i].envAmp.getCurrentValue() < l && !voices[i].envAmp.isAttack()) {
-      l = voices[i].envAmp.getCurrentValue();
+  for (int i = 0; i < polyphony; ++i) {
+    if (voices[i].envAmp.getCurrentLevel() < l && !voices[i].envAmp.isAttack()) {
+      l = voices[i].envAmp.getCurrentLevel();
       v = i;
     }
   }
@@ -153,16 +152,12 @@ int Synth::findNewVoice(float note) const {
   return v;
 }
 
-void Synth::startVoices(int v, float note, float velocity) {
-  // TODO: This function will handle legato and glide (by calling the setGlideTarget() function and storting the previous note for trills
-
-  voices[v].start(note, velocity);
-}
-
-void Synth::updateVoicesParams() {
-  for (int v = 0; v < p.global.voiceCount; ++v) {
-    voices[v].updateParams(p);
+void Synth::setPolyphony(int newVoiceCount) {
+  // Resets voices that will be unused
+  for (int v = newVoiceCount; v < MAX_VOICES; ++v) {
+    voices[v].reset();
+    // TODO: Implement a "kill" method? Maybe unecessary since render uses
+    // polyphony to choose what voices to render
   }
-};
-
-void Synth::setPolyphony(int newVoiceCount) {}
+  polyphony = newVoiceCount;
+}

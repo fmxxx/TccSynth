@@ -11,17 +11,11 @@
 
 struct SynthParams;
 
-float periodFromNote(float sampleRate, float note, float globalTuningA4, float semitone, float cents);
-
 class Voice {
  public:
   // ------ Midi Inputs ------ //
-  float note;
-  float velocity;
-  // ------ Internal State ------ //
-  float period;       // Samples to complete a cycle
-  float glideTarget;  // Samples target for pitch glide
-  float sampleRate;   // Gets updated on Synth::allocateResources()
+  float note = 0.0f;
+  float velocity = 0.0f;
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
   float envModOut = 0.0f;
@@ -40,18 +34,29 @@ class Voice {
   Envelope envMod;
   Lfo lfo1;
   Lfo lfo2;
+  // This lfo belongs to voice[0] and is shared by all voices
+  // Used for global vibrato
+  Lfo lfoMono;
 
   void reset();
 
   void updateParams(const SynthParams& newParams);
   void updateSlowMods();
 
-  void start(float note, int velocity);
+  void setSampleRate(float newSampleRate);
+  void startNote(float note, float velocity);
   void release();
+
+  bool isActive() const;
 
   float render();
 
  private:
-  // Returns freq in Hz
-  float freqFromNote(float sampleRate, float globalTuning, float semitone, float cents);
+  float sampleRate = 44100.0f;
+
+  float period1 = 0.0f;  // Amount of samples in one cycle
+  float period2 = 0.0f;  // Amount of samples in one cycle
+  float pitchModSemitones = 0.0f;
+
+  float periodFromNote(float note, float semitone, float cents) const;
 };
