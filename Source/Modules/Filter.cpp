@@ -8,6 +8,8 @@ void Filter::reset() {
   s4 = 0.0f;
 }
 
+void Filter::updateParams() {}
+
 void Filter::setsampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
 }
