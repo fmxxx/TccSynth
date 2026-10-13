@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="o6DF02" name="TccSynth" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="rowv6N" name="TccSynth">
     <GROUP id="{F00C7707-199F-D1FD-F35E-D32B4AFB6724}" name="Source">
       <GROUP id="{D079166B-E8E6-732F-FF06-E6132DA866ED}" name="Modules">
@@ -27,6 +27,7 @@
         <FILE id="SsGiJH" name="Voice.cpp" compile="1" resource="0" file="Source/Framework/Voice.cpp"/>
         <FILE id="sJJ6wv" name="Voice.h" compile="0" resource="0" file="Source/Framework/Voice.h"/>
       </GROUP>
+      <FILE id="fBGuHO" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="Sbf6Ej" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="KAts1W" name="PluginProcessor.h" compile="0" resource="0"

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "../Framework/Synth.h"  // Only for the CONTROL_RATE_SAMPLES
+#include "../Constants.h"
 
 void Lfo::reset() {}
 

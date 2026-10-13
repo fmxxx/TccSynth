@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cstring>
 
+#include "../Constants.h"
+
 void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
   const float sampleRate = static_cast<float>(sampleRateNew);
   // Sets sampleRate, initializes and updates parameters

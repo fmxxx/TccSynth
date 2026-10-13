@@ -9,7 +9,6 @@
 
 constexpr int MAX_VOICES = 8;
 constexpr float POLY_ATTENUATION = 1.0f / static_cast<float>(MAX_VOICES);
-constexpr int CONTROL_RATE_SAMPLES = 32;
 
 void protectYourEars(float* buffer, int sampleCount);
 
