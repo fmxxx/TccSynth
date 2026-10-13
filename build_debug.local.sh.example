@@ -1,0 +1,6 @@
+# Set this to the AudioPluginHost executable on your machine.
+HOST_BIN="/path/to/AudioPluginHost"
+
+# Optional: set a custom VST3 installation directory.
+# Defaults to "$HOME/.vst3".
+# VST3_DIR="$HOME/.vst3"
