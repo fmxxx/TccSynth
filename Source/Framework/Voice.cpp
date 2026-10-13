@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../Constants.h"
+
 void Voice::reset() {
   note = 0;
   velocity = 0;
@@ -87,6 +89,8 @@ void Voice::updateParams(const SynthParams& newParams) {
 void Voice::updateSlowMods() {
   lfo1Out = lfo1.nextSample();
   lfo2Out = lfo2.nextSample();
+  envFilterOut = envFilter.nextSample();
+  envModOut = envMod.nextSample();
 
   // TODO apply modulation to parameters
   // --- Osc 1 --- //
@@ -119,8 +123,12 @@ void Voice::setSampleRate(float newSampleRate) {
   lfo2.setSampleRate(newSampleRate);
 
   envAmp.setSampleRate(newSampleRate);
-  envFilter.setSampleRate(newSampleRate);
-  envMod.setSampleRate(newSampleRate);
+
+  // Make modulation envelopes have a slower sample rate (updated every
+  // CONTROL_RATE_SAMPLES instead of every sample)
+  const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
+  envFilter.setSampleRate(controlRate);
+  envMod.setSampleRate(controlRate);
 }
 
 void Voice::startNote(float newNote, float newVelocity) {
@@ -144,9 +152,6 @@ void Voice::release() {
 }
 
 float Voice::render() {
-  envFilterOut = envFilter.nextSample();
-  envModOut = envMod.nextSample();
-
   const float frequency1Hz = sampleRate / period1 * std::exp2(pitchModSemitones / 12.0f);
   const float frequency2Hz = sampleRate / period2 * std::exp2(pitchModSemitones / 12.0f);
 
