@@ -33,7 +33,7 @@
   /* -------------------- Filter -------------------- */                                                 \
   X(filterAttack, "Filter Attack", 0.1f, 10.0f, 0.001f, 0.1f, 1.0f, "s", filter.attack)                  \
   X(filterDecay, "Filter Decay", 0.1f, 10.0f, 0.001f, 1.0f, 1.0f, "s", filter.decay)                     \
-  X(filterSustain, "Filter Sustain", 0.1f, 1.0f, 0.001f, 5.0f, 1.0f, "", filter.sustain)                 \
+  X(filterSustain, "Filter Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", filter.sustain)                 \
   X(filterRelease, "Filter Release", 0.1f, 10.0f, 0.001f, 1.0f, 1.0f, "s", filter.release)               \
   X(filterCutoff, "Filter Cutoff", 20.0f, 20000.0f, 0.1f, 20000.0f, 1000.0f, "Hz", filter.cutoff)        \
   X(filterResonance, "Filter Resonance", 0.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", filter.resonance)          \
@@ -43,7 +43,7 @@
   /* -------------------- Amp -------------------- */                                                    \
   X(ampAttack, "Amp Attack", 0.1f, 10.0f, 0.001f, 0.01f, 1.0f, "s", amp.attack)                          \
   X(ampDecay, "Amp Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.decay)                              \
-  X(ampSustain, "Amp Sustain", 0.1f, 1.0f, 0.001f, 5.0f, 1.0f, "", amp.sustain)                          \
+  X(ampSustain, "Amp Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", amp.sustain)                          \
   X(ampRelease, "Amp Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.release)                        \
   X(ampVelocity, "Amp Velocity", 0.0f, 100.0f, 1.0f, 50.0f, 0.0f, "%", amp.velocity)                     \
   X(ampVolume, "Amp Volume", 0.0f, 100.0f, 1.0f, 80.0f, 0.0f, "%", amp.volume)                           \
@@ -67,7 +67,7 @@
   /* -------------------- Mod Envelope -------------------- */                                           \
   X(modEnvAttack, "Mod Env Attack", 0.1f, 10.0f, 0.001f, 0.01f, 1.0f, "s", modEnv.attack)                \
   X(modEnvDecay, "Mod Env Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.decay)                    \
-  X(modEnvSustain, "Mod Env Sustain", 0.1f, 1.0f, 0.001f, 5.0f, 1.0f, "", modEnv.sustain)                \
+  X(modEnvSustain, "Mod Env Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", modEnv.sustain)                \
   X(modEnvRelease, "Mod Env Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.release)              \
   X(modEnvOsc2Volume, "Mod Env Osc 2 Volume", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.osc2Volume) \
   X(modEnvVoiceFreq, "Mod Env Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.voiceFreq)     \
