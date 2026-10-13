@@ -5,6 +5,37 @@
 
 #include "../Constants.h"
 
+namespace {
+// Remaps the raw shape parameter so a perfect saw exists in a small window
+// around zero, and the morph ramps in smoothly outside it.
+//
+//   |shape| <= 0.05       -> 0 (perfect saw)
+//   0.05 < |shape| < 0.25 -> cubic Hermite ramp
+//   |shape| >= 0.25       -> input unchanged
+//
+// Cubic Hermite matches value and slope at both endpoints, so there is no
+// audible kick-in at ±0.05 or at ±0.25.
+inline float applyShapeDeadZone(float s) {
+  constexpr float deadZone = 0.05f;
+  constexpr float rampEnd = 0.25f;
+  constexpr float rampWidth = rampEnd - deadZone;
+
+  const float a = std::abs(s);
+  if (a <= deadZone) return 0.0f;
+  if (a >= rampEnd) return s;
+
+  const float sign = (s > 0.0f) ? 1.0f : -1.0f;
+  const float t = (a - deadZone) / rampWidth;
+  const float t2 = t * t;
+  const float t3 = t2 * t;
+
+  // Cubic Hermite: f(0)=0, f(1)=rampEnd, f'(0)=0, f'(1)=rampWidth
+  const float h = (-2.0f * t3 + 3.0f * t2) * rampEnd + (t3 - t2) * rampWidth;
+
+  return sign * h;
+}
+}  // namespace
+
 void Voice::reset() {
   note = 0;
   velocity = 0;
@@ -29,10 +60,10 @@ void Voice::updateParams(const SynthParams& newParams) {
 
   // --- Oscillators ---
   // Pitch is calculated from the note and these parameters when a note starts.
-  osc1.shape = p.osc1.shape;
+  osc1.shape = applyShapeDeadZone(p.osc1.shape);
   osc1.amplitude = p.osc1.volume / 100.0f;
 
-  osc2.shape = p.osc2.shape;
+  osc2.shape = applyShapeDeadZone(p.osc2.shape);
   osc2.amplitude = p.osc2.volume / 100.0f;
 
   // --- Filter ---
