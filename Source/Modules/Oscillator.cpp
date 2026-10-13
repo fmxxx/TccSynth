@@ -1,6 +1,8 @@
 
 #include "Oscillator.h"
 
+#include <math.h>
+
 #include <algorithm>
 
 // Eff means "effective", the value after all modulation is applied
@@ -52,24 +54,23 @@ float Oscillator::saw(float p, float dt) {
 }
 
 float Oscillator::triangleShape(float v1, float slant) {
-  // v1 is expected in [-1, 1]; clamp for safety.
-  if (v1 < -1.0f) v1 = -1.0f;
-  if (v1 > 1.0f) v1 = 1.0f;
-
-  // slant: 1.0 -> pure saw, 0.5 -> triangle.
+  v1 = std::clamp(v1, -1.0f, 1.0f);
   if (slant < 0.5f) slant = 0.5f;
   if (slant > 1.0f) slant = 1.0f;
   if (slant >= 1.0f) return v1;
 
-  const float threshold = 2.0f * slant - 1.0f;
+  // The two line segments of the piecewise fold. Outside its domain,
+  // each segment grows without bound; the soft minimum below prevents
+  // that from leaking into the output.
+  const float b1 = (v1 + 1.0f) / slant - 1.0f;
+  const float b2 = (1.0f - v1) / (1.0f - slant) - 1.0f;
 
-  if (v1 < threshold) {
-    return (v1 + 1.0f) / slant - 1.0f;
-  } else {
-    float denom = 1.0f - slant;
-    if (denom < 0.00001f) denom = 0.00001f;
-    return (1.0f - v1) / denom - 1.0f;
-  }
+  // Corner softening radius. Smaller = sharper triangle, more aliasing.
+  // Larger = rounder peak, less aliasing. 0.02 .. 0.10 is a useful range.
+  const float r = 0.1f;
+
+  const float diff = b1 - b2;
+  return 0.5f * (b1 + b2 - std::sqrt(diff * diff + r * r));
 }
 
 // --- --- Per-sample --- --- //
@@ -82,7 +83,7 @@ float Oscillator::nextSample() {
     // ----- Saw to triangle morph -----
     // slant: 1.0 at shape = 0, 0.5 at shape = -1.
     const float slant = 1.0f + 0.5f * shapeEff;
-    const float sawA = saw(phase, dt);
+    const float sawA = 2.0f * phase - 1.0f;
     out = triangleShape(sawA, slant);
   } else {
     // ----- Saw -> square -> narrow pulse -----
