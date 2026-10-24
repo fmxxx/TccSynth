@@ -90,9 +90,9 @@
 
 // Choice parameters: no range, has a list of names.
 // Columns: id, display, names (pipe-separated), default index, dest
-#define PARAM_CHOICE_LIST                                                          \
-  X(lfo1Shape, "LFO 1 Shape", "Sine|Tri|Saw|Ramp|Square|Thin Rect", 0, lfo1.shape) \
-  X(lfo2Shape, "LFO 2 Shape", "Sine|Tri|Saw|Ramp|Square|Thin Rect", 0, lfo2.shape)
+#define PARAM_CHOICE_LIST                                                                          \
+  X(lfo1Shape, "LFO 1 Shape", "Sine|Tri|Ramp Down|Ramp Up|Square|25 Rect|10 Pulse", 0, lfo1.shape) \
+  X(lfo2Shape, "LFO 2 Shape", "Sine|Tri|Ramp Down|Ramp Up|Square|25 Rect|10 Pulse", 0, lfo2.shape)
 
 // Bool parameters: no range, no unit.
 // Columns: id, display, default, dest
