@@ -49,7 +49,7 @@
   X(ampVolume, "Amp Volume", 0.0f, 100.0f, 1.0f, 80.0f, 0.0f, "%", amp.volume)                           \
                                                                                                          \
   /* -------------------- LFO 1 -------------------- */                                                  \
-  X(lfo1Rate, "LFO 1 Rate", 0.01f, 40.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.rate)                           \
+  X(lfo1Rate, "LFO 1 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.rate)                           \
   X(lfo1Amplitude, "LFO 1 Amplitude", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.amplitude)            \
   X(lfo1CutoffFreq, "LFO 1 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.cutoffFreq)        \
   X(lfo1VoiceFreq, "LFO 1 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.voiceFreq)           \
@@ -57,7 +57,7 @@
   X(lfo1Shape2, "LFO 1 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape2)                    \
                                                                                                          \
   /* -------------------- LFO 2 -------------------- */                                                  \
-  X(lfo2Rate, "LFO 2 Rate", 0.01f, 40.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.rate)                           \
+  X(lfo2Rate, "LFO 2 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.rate)                           \
   X(lfo2Amplitude, "LFO 2 Amplitude", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.amplitude)            \
   X(lfo2CutoffFreq, "LFO 2 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.cutoffFreq)        \
   X(lfo2VoiceFreq, "LFO 2 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.voiceFreq)           \
