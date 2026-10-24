@@ -41,7 +41,7 @@ void Voice::reset() {
   velocity = 0;
   osc1period = 0.0f;
   osc2period = 0.0f;
-  pitchModSemitones = 0.0f;
+  pitchModOctaves = 0.0f;
   osc1.reset();
   osc2.reset();
 
@@ -86,7 +86,7 @@ void Voice::updateParams(const SynthParams& newParams) {
   envAmp.attackFromZero = p.amp.attackFromZero;
 
   // --- Mod Envelope ---
-  // TODO figure out how to handle voiceFreq
+  // voiceFreq handled in updateParams()
   envMod.attackMs = p.modEnv.attack;
   envMod.decayMs = p.modEnv.decay;
   envMod.sustain = p.modEnv.sustain;
@@ -135,17 +135,22 @@ void Voice::updateSlowMods() {
   // --- Osc 2 --- //
   float osc2ShapeModSum = (p.modEnv.shape2 * envModOut + p.lfo1.shape2 * lfo1Out + p.lfo2.shape2 * lfo2Out);
   osc2ShapeModSum = osc2ShapeModSum * 0.01f;
-  float osc2VolSum = p.modEnv.osc2Volume + envModOut;
+  float osc2VolSum = p.modEnv.osc2Volume * 0.01f + envModOut;
   osc2VolSum = osc2VolSum * 0.01f;
   osc2.applyModulations(osc2ShapeModSum, osc2VolSum);
 
   // --- Filter --- //
 
   // --- Global --- //
-  const float voiceFreqModSum =
-      p.lfo1.voiceFreq * lfo1Out + p.lfo2.voiceFreq * lfo2Out + p.modEnv.voiceFreq * envModOut;
-  const float normalizedPitchMod = std::clamp(voiceFreqModSum * 0.003f, -1.0f, 1.0f);
-  pitchModSemitones = normalizedPitchMod * 12.0f;
+
+  // Voice pitch
+  constexpr float LFO_OCT_PER_UNIT = 0.001667f;
+  constexpr float ENV_OCT_PER_UNIT = 0.01f;
+
+  pitchModOctaves =
+      p.lfo1.voiceFreq * LFO_OCT_PER_UNIT * lfo1Out +
+      p.lfo2.voiceFreq * LFO_OCT_PER_UNIT * lfo2Out +
+      p.modEnv.voiceFreq * ENV_OCT_PER_UNIT * envModOut;
 }
 
 void Voice::setSampleRate(float newSampleRate) {
@@ -188,11 +193,12 @@ void Voice::release() {
 }
 
 float Voice::render() {
-  const float osc1hz = sampleRate / osc1period * std::exp2(pitchModSemitones / 12.0f);
-  const float osc2hz = sampleRate / osc2period * std::exp2(pitchModSemitones / 12.0f);
+  // If pitchRatio = 1, then frequency doesnt change from midi note's
+  const float pitchRatio = std::exp2(pitchModOctaves);
 
-  osc1.phaseInc = osc1hz / sampleRate;
-  osc2.phaseInc = osc2hz / sampleRate;
+  // phaseInc = 1 * pitchRatio / osc1period; where 1 is a full cycle
+  osc1.phaseInc = pitchRatio / osc1period;
+  osc2.phaseInc = pitchRatio / osc2period;
 
   float oscMix = osc1.nextSample() + osc2.nextSample();
   oscMix = oscMix * 0.5;
