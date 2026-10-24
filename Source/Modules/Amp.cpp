@@ -4,5 +4,11 @@
 #include <algorithm>
 
 float Amp::nextSample(float input, float envLevel) {
-  return std::clamp(input * envLevel, -1.0f, 1.0f);
+  // --- Apply amp envelope --- //
+  output = input * envLevel;
+
+  // --- Velocity Scaling --- //
+  output = output * (velocityNorm * velocitySens + (1 - velocitySens));
+
+  return std::clamp(output, -1.0f, 1.0f);
 }

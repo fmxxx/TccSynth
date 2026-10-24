@@ -168,6 +168,8 @@ void Voice::setSampleRate(float newSampleRate) {
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
   velocity = newVelocity;
+  amp.velocityNorm = velocity / 127.0f;
+
   osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
 
