@@ -41,6 +41,7 @@ class Voice {
   void reset();
 
   void updateParams(const SynthParams& newParams);
+  void advanceLfos();
   void updateSlowMods();
 
   void setSampleRate(float newSampleRate);

@@ -45,8 +45,9 @@ void Synth::render(float** outputBuffers, int sampleCount) {
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
       for (int v = 0; v < polyphony; ++v) {
+        voices[v].advanceLfos();  // Advance lfos even in inactive voices
         if (voices[v].isActive()) {
-          voices[v].updateSlowMods();
+          voices[v].updateSlowMods();  // update envs and mod amounts
         }
       }
     }

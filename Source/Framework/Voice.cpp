@@ -120,9 +120,12 @@ void Voice::updateParams(const SynthParams& newParams) {
   lfo2.updateParams();
 }
 
-void Voice::updateSlowMods() {
+void Voice::advanceLfos() {
   lfo1Out = lfo1.nextSample();
   lfo2Out = lfo2.nextSample();
+}
+
+void Voice::updateSlowMods() {
   envFilterOut = envFilter.nextSample();
   envModOut = envMod.nextSample();
 
@@ -182,10 +185,12 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc2.newNote();
 
   if (lfo1.keytrig) {
+    lfo1Out = 0.0f;
     lfo1.resetPhase();
   }
 
   if (lfo2.keytrig) {
+    lfo2Out = 0.0f;
     lfo2.resetPhase();
   }
 
