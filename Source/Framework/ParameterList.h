@@ -49,16 +49,16 @@
   X(ampVolume, "Amp Volume", 0.0f, 100.0f, 1.0f, 80.0f, 0.0f, "%", amp.volume)                           \
                                                                                                          \
   /* -------------------- LFO 1 -------------------- */                                                  \
-  X(lfo1Rate, "LFO 1 Rate", 0.01f, 40.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.rate)                           \
-  X(lfo1Amplitude, "LFO 1 Amplitude", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.amplitude)            \
+  X(lfo1Rate, "LFO 1 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.rate)                           \
+  X(lfo1Amplitude, "LFO 1 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo1.amplitude)          \
   X(lfo1CutoffFreq, "LFO 1 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.cutoffFreq)        \
   X(lfo1VoiceFreq, "LFO 1 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.voiceFreq)           \
   X(lfo1Shape1, "LFO 1 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape1)                    \
   X(lfo1Shape2, "LFO 1 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape2)                    \
                                                                                                          \
   /* -------------------- LFO 2 -------------------- */                                                  \
-  X(lfo2Rate, "LFO 2 Rate", 0.01f, 40.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.rate)                           \
-  X(lfo2Amplitude, "LFO 2 Amplitude", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.amplitude)            \
+  X(lfo2Rate, "LFO 2 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.rate)                           \
+  X(lfo2Amplitude, "LFO 2 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo2.amplitude)          \
   X(lfo2CutoffFreq, "LFO 2 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.cutoffFreq)        \
   X(lfo2VoiceFreq, "LFO 2 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.voiceFreq)           \
   X(lfo2Shape1, "LFO 2 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape1)                    \
@@ -90,9 +90,9 @@
 
 // Choice parameters: no range, has a list of names.
 // Columns: id, display, names (pipe-separated), default index, dest
-#define PARAM_CHOICE_LIST                                                     \
-  X(lfo1Shape, "LFO 1 Shape", "Sine|Tri|Saw|Square|Thin Rect", 0, lfo1.shape) \
-  X(lfo2Shape, "LFO 2 Shape", "Sine|Tri|Saw|Square|Thin Rect", 0, lfo2.shape)
+#define PARAM_CHOICE_LIST                                                                             \
+  X(lfo1Shape, "LFO 1 Shape", "Sine|Tri|Ramp Down|Ramp Up|Square|25% Pulse|10% Pulse", 0, lfo1.shape) \
+  X(lfo2Shape, "LFO 2 Shape", "Sine|Tri|Ramp Down|Ramp Up|Square|25% Pulse|10% Pulse", 0, lfo2.shape)
 
 // Bool parameters: no range, no unit.
 // Columns: id, display, default, dest

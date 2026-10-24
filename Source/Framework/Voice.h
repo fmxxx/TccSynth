@@ -41,6 +41,7 @@ class Voice {
   void reset();
 
   void updateParams(const SynthParams& newParams);
+  void advanceLfos();
   void updateSlowMods();
 
   void setSampleRate(float newSampleRate);
@@ -56,7 +57,7 @@ class Voice {
 
   float osc1period = 0.0f;  // Amount of samples in one cycle
   float osc2period = 0.0f;  // Amount of samples in one cycle
-  float pitchModSemitones = 0.0f;
+  float pitchModOctaves = 0.0f;
 
   float periodFromNote(float note, float semitone, float cents) const;
 };

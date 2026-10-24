@@ -45,8 +45,9 @@ void Synth::render(float** outputBuffers, int sampleCount) {
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
       for (int v = 0; v < polyphony; ++v) {
+        voices[v].advanceLfos();  // Advance lfos even in inactive voices
         if (voices[v].isActive()) {
-          voices[v].updateSlowMods();
+          voices[v].updateSlowMods();  // update envs and mod amounts
         }
       }
     }
@@ -151,7 +152,8 @@ int Synth::findNewVoice(float note) const {
 
   for (int i = 0; i < polyphony; ++i) {
     if (!voices[i].envAmp.isAttack()) {
-      l = voices[i].envAmp.getCurrentLevel();
+      if (voices[i].envAmp.getCurrentLevel() < l)
+        l = voices[i].envAmp.getCurrentLevel();
       v = i;
     }
   }
