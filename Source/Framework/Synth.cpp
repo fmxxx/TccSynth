@@ -124,13 +124,13 @@ void Synth::noteOff(float note) {
 int Synth::findNewVoice(float note) const {
   // Note priorities
   // 1. Same note as we're activating
-  // 2. Non active voice
-  // 3. Quietest voice
+  // 2. An inactive voice
+  // 3. The voice with quietest envelope not in attack
   // 4. 0th Voice
 
   int v = 0;  // The free voice
 
-  // Same note voice
+  // Same note as we're activating
   for (int i = 0; i < polyphony; ++i) {
     if (voices[i].note == note) {
       v = i;
@@ -138,7 +138,7 @@ int Synth::findNewVoice(float note) const {
     }
   }
 
-  // Inactive voice
+  // An inactive voice
   for (int i = 0; i < polyphony; ++i) {
     if (!voices[i].isActive()) {
       v = i;
@@ -146,13 +146,11 @@ int Synth::findNewVoice(float note) const {
     }
   }
 
-  // TODO: Quietest non attack voice
-  // TODO: Find actual level of the voice, since velocity scaling
-  // will make this method of find it outdated
-  float l = 100.0f;
+  // The voice with quietest envelope not in attack
+  float l = 100.0f;  // Large value (louder than any sample)
 
   for (int i = 0; i < polyphony; ++i) {
-    if (voices[i].envAmp.getCurrentLevel() < l && !voices[i].envAmp.isAttack()) {
+    if (!voices[i].envAmp.isAttack()) {
       l = voices[i].envAmp.getCurrentLevel();
       v = i;
     }
