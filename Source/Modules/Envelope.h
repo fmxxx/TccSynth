@@ -21,6 +21,9 @@ class Envelope {
   float sustain = 0.0f;  //[0, 1]
   float releaseMs = 0.0f;
   bool attackFromZero = false;
+  float velocitySens = 0.0f;  // [0,1], Only used by envAmp
+
+  float velocityNorm = 0.0f;  // [0,1]
 
   // ------ Modulations ------ //
   float attackMsMod = 0.0f;
@@ -55,6 +58,8 @@ class Envelope {
   float stageIncrement = 0.0f;
 
   float attackTarget = 1.0f;
+
+  float applyVel(float level) const;
 
   // Converts a level delta and duration to a single-sample increment.
   float calcCoef(float ms, float target);

@@ -77,8 +77,8 @@ void Voice::updateParams(const SynthParams& newParams) {
 
   // --- Amp ---
   amp.volume = p.amp.volume / 100.0f;
-  amp.velocitySens = p.amp.velocity / 100.0f;
 
+  envAmp.velocitySens = p.amp.velocity / 100.0f;
   envAmp.attackMs = p.amp.attack;
   envAmp.decayMs = p.amp.decay;
   envAmp.sustain = p.amp.sustain;
@@ -168,7 +168,7 @@ void Voice::setSampleRate(float newSampleRate) {
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
   velocity = newVelocity;
-  amp.velocityNorm = velocity / 127.0f;
+  envAmp.velocityNorm = velocity / 127.0f;
 
   osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);

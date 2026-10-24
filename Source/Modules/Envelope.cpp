@@ -71,13 +71,17 @@ void Envelope::release() {
   stageIncrement = calcCoef(releaseMs, targetLevel - level);
 }
 
+float Envelope::applyVel(float level) const {
+  return level * (velocityNorm * velocitySens + (1 - velocitySens));
+}
+
 float Envelope::nextSample() {
   // Advance the current segment by one sample and
   // switch stages when it hits  its target
   switch (currentStage) {
     case EnvelopeStage::OFF:
       level = 0.0f;
-      return level;
+      return applyVel(level);
 
     case EnvelopeStage::DECLICK:
       level += stageIncrement;
@@ -85,7 +89,7 @@ float Envelope::nextSample() {
         level = targetLevel;
         attack();
       }
-      return level;
+      return applyVel(level);
 
     case EnvelopeStage::ATTACK:
       if (attackMs <= 0.0f) {
@@ -108,7 +112,7 @@ float Envelope::nextSample() {
           stageIncrement = calcCoef(decayMs, targetLevel - level);
         }
       }
-      return level;
+      return applyVel(level);
 
     case EnvelopeStage::DECAY:
       if (decayMs <= 0.0f) {
@@ -124,11 +128,11 @@ float Envelope::nextSample() {
         currentStage = EnvelopeStage::SUSTAIN;
         stageIncrement = 0.0f;
       }
-      return level;
+      return applyVel(level);
 
     case EnvelopeStage::SUSTAIN:
       level = std::clamp(sustain, 0.0f, 1.0f);
-      return level;
+      return applyVel(level);
 
     case EnvelopeStage::RELEASE:
       if (releaseMs <= 0.0f) {
@@ -143,14 +147,14 @@ float Envelope::nextSample() {
         currentStage = EnvelopeStage::OFF;
         stageIncrement = 0.0f;
       }
-      return level;
+      return applyVel(level);
   }
 
-  return level;
+  return applyVel(level);
 }
 
 float Envelope::getCurrentLevel() const {
-  return level;
+  return applyVel(level);
 }
 
 EnvelopeStage Envelope::getStage() const {
