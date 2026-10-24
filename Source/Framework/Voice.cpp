@@ -107,6 +107,9 @@ void Voice::updateParams(const SynthParams& newParams) {
   lfo2.amplitude = p.lfo2.amplitude / 100.0f;
 
   // After the assignments above:
+  period1 = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
+  period2 = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
+
   filter.updateParams();
 
   envAmp.updateParams();
