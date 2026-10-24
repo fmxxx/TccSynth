@@ -54,8 +54,8 @@ class Voice {
  private:
   float sampleRate = 44100.0f;
 
-  float period1 = 0.0f;  // Amount of samples in one cycle
-  float period2 = 0.0f;  // Amount of samples in one cycle
+  float osc1period = 0.0f;  // Amount of samples in one cycle
+  float osc2period = 0.0f;  // Amount of samples in one cycle
   float pitchModSemitones = 0.0f;
 
   float periodFromNote(float note, float semitone, float cents) const;

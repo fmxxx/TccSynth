@@ -39,8 +39,8 @@ inline float applyShapeDeadZone(float s) {
 void Voice::reset() {
   note = 0;
   velocity = 0;
-  period1 = 0.0f;
-  period2 = 0.0f;
+  osc1period = 0.0f;
+  osc2period = 0.0f;
   pitchModSemitones = 0.0f;
   osc1.reset();
   osc2.reset();
@@ -107,8 +107,8 @@ void Voice::updateParams(const SynthParams& newParams) {
   lfo2.amplitude = p.lfo2.amplitude / 100.0f;
 
   // After the assignments above:
-  period1 = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
-  period2 = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
+  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
+  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
 
   filter.updateParams();
 
@@ -168,8 +168,8 @@ void Voice::setSampleRate(float newSampleRate) {
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
   velocity = newVelocity;
-  period1 = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
-  period2 = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
+  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
+  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
 
   osc1.newNote();
   osc2.newNote();
@@ -186,11 +186,11 @@ void Voice::release() {
 }
 
 float Voice::render() {
-  const float frequency1Hz = sampleRate / period1 * std::exp2(pitchModSemitones / 12.0f);
-  const float frequency2Hz = sampleRate / period2 * std::exp2(pitchModSemitones / 12.0f);
+  const float osc1hz = sampleRate / osc1period * std::exp2(pitchModSemitones / 12.0f);
+  const float osc2hz = sampleRate / osc2period * std::exp2(pitchModSemitones / 12.0f);
 
-  osc1.phaseInc = frequency1Hz / sampleRate;
-  osc2.phaseInc = frequency2Hz / sampleRate;
+  osc1.phaseInc = osc1hz / sampleRate;
+  osc2.phaseInc = osc2hz / sampleRate;
 
   float oscMix = osc1.nextSample() + osc2.nextSample();
   oscMix = oscMix * 0.5;
