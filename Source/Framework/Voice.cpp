@@ -181,6 +181,14 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc1.newNote();
   osc2.newNote();
 
+  if (lfo1.keytrig) {
+    lfo1.resetPhase();
+  }
+
+  if (lfo2.keytrig) {
+    lfo2.resetPhase();
+  }
+
   envAmp.start();
   envFilter.start();
   envMod.start();

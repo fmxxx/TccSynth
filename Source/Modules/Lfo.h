@@ -4,12 +4,14 @@
 class Lfo {
  public:
   // ------ Exposed Parameters ------ //
-  float freq;
-  bool keytrig;
-  int shape;
-  float amplitude;  // [0,1]
+  float freq = 1.0f;
+  bool keytrig = false;
+  int shape = 1;
+  float amplitude = 1.0f;  // [0,1]
 
   void reset();
+  void resetPhase();
+
   void updateParams();
   void setSampleRate(float newSampleRate);
 
