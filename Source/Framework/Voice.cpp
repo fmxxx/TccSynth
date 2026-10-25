@@ -195,6 +195,7 @@ void Voice::setSampleRate(float newSampleRate) {
 
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
+  noteCentered = (note - 64) / 64;  // Useful for keytracking
   velocityNorm = newVelocity / 127.0f;
   envAmp.velocityNorm = velocityNorm;
 
