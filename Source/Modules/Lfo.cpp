@@ -29,21 +29,17 @@ float Lfo::nextSample() {
     case 0:  // Sine
       sample = std::sin(phase * 2.0f * M_PI);
       break;
-
-    case 1:  // Tri
-      // Triangle that starts at -1, peaks at +1 at phase 0.5,
-      // and returns to -1 at phase 1. Matches the sine's start point.
-      sample = 1.0f - 4.0f * std::abs(phase - 0.5f);
+    case 1:  // Tri (0 at phase = 0)
+      float p = phase + 0.25f;
+      p -= std::floor(p);
+      sample = 1.0f - 4.0f * std::abs(p - 0.5f);
       break;
-
     case 2:  // Saw (falling, +1 -> -1)
       sample = 1.0f - 2.0f * phase;
       break;
-
     case 3:  // Ramp (rising, -1 -> +1)
       sample = 2.0f * phase - 1.0f;
       break;
-
     case 4:  // Square
       sample = (phase < 0.5f) ? 1.0f : -1.0f;
       break;
