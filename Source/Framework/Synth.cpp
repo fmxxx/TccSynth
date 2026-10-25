@@ -153,12 +153,13 @@ int Synth::findNewVoice(float note) const {
 
   for (int i = 0; i < polyphony; ++i) {
     if (!voices[i].envAmp.isAttack()) {
-      if (voices[i].envAmp.getCurrentLevel() < l)
-        l = voices[i].envAmp.getCurrentLevel();
-      v = i;
+      const float level = voices[i].envAmp.getCurrentLevel();
+      if (level < l) {
+        l = level;
+        v = i;
+      }
     }
   }
-
   return v;
 }
 
