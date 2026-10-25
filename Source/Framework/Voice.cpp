@@ -77,27 +77,27 @@ void Voice::updateParams(const SynthParams& newParams) {
   filter.cutoffFreq = p.filter.cutoff;
   filter.resonance = p.filter.resonance / 100.0f;
 
-  envFilter.attackMs = p.filter.attack;
-  envFilter.decayMs = p.filter.decay;
+  envFilter.attackMs = p.filter.attack * 1000;
+  envFilter.decayMs = p.filter.decay * 1000;
   envFilter.sustain = p.filter.sustain;
-  envFilter.releaseMs = p.filter.release;
+  envFilter.releaseMs = p.filter.release * 1000;
 
   // --- Amp ---
   amp.volume = p.amp.volume / 100.0f;
 
   envAmp.velocitySens = p.amp.velocity / 100.0f;
-  envAmp.attackMs = p.amp.attack;
-  envAmp.decayMs = p.amp.decay;
+  envAmp.attackMs = p.amp.attack * 1000;
+  envAmp.decayMs = p.amp.decay * 1000;
   envAmp.sustain = p.amp.sustain;
-  envAmp.releaseMs = p.amp.release;
+  envAmp.releaseMs = p.amp.release * 1000;
   envAmp.attackFromZero = p.amp.attackFromZero;
 
   // --- Mod Envelope ---
   // voiceFreq handled in updateParams()
-  envMod.attackMs = p.modEnv.attack;
-  envMod.decayMs = p.modEnv.decay;
+  envMod.attackMs = p.modEnv.attack * 1000;
+  envMod.decayMs = p.modEnv.decay * 1000;
   envMod.sustain = p.modEnv.sustain;
-  envMod.releaseMs = p.modEnv.release;
+  envMod.releaseMs = p.modEnv.release * 1000;
 
   // --- LFO 1 ---
   // TODO figure out how to handle voiceFreq
