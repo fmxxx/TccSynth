@@ -1,7 +1,7 @@
 #pragma once
 
 // Simple PRNG that takes an int seed/state and returns a float [0, 1]
-float randomLCG(int seed) {
+inline float randomLCG(int seed) {
   // Standard LCG constants (similar to those used in glibc)
   unsigned int a = 1103515245;
   unsigned int c = 12345;
