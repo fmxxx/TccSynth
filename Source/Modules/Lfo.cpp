@@ -57,8 +57,8 @@ float Lfo::nextSample() {
 
   // Advance
   phase += phaseInc;
-  if (phase >= phaseMax) {
-    phase -= phaseMax;
+  if (phase >= 1.0f) {
+    phase -= 1.0f;
   }
 
   return sample * amplitude;
