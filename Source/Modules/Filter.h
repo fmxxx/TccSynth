@@ -15,12 +15,18 @@ class Filter {
 
   Filter();
   void reset();
-  void updateParams();
   void setsampleRate(float newsampleRate);
+
+  void updateParams();
+  void applyModulations(float cutoffMod, float resonanceMod);
+
   float nextSample(float input);
 
  private:
   float sampleRate = 44100.0f;
+
+  float cutoffFreqEff = 20000.0f;  // Modulated cutoff
+  float resonanceEff = 0.0f;       // Modulated resonance
 
   // ------ Precomputed coefficients (calculated in updateParams) ------ //
   float g = 0.0f;   // tan(pi * fc / fs) — the ZDF frequency warp
@@ -41,4 +47,6 @@ class Filter {
   float s2 = 0.0f;
   float s3 = 0.0f;
   float s4 = 0.0f;
+
+  void calcCoefs();
 };
