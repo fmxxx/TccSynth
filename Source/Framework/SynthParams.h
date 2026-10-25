@@ -23,7 +23,7 @@ struct SynthParams {
   } filter;
 
   struct {
-    float attack = 0.01f,
+    float attack = 0.1f,
           decay = 0.5f,
           sustain = 0.5f,
           release = 0.5f;
@@ -44,7 +44,7 @@ struct SynthParams {
   } lfo1, lfo2;
 
   struct {
-    float attack = 0.01f,
+    float attack = 0.1f,
           decay = 0.5f,
           sustain = 0.5f,
           release = 0.5f;
