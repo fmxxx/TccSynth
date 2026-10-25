@@ -52,8 +52,14 @@ void Voice::reset() {
   envFilter.reset();
   envMod.reset();
 
+  envFilterOut = 0.0f;
+  envModOut = 0.0f;
+
   lfo1.reset();
   lfo2.reset();
+
+  lfo1Out = 0.0f;
+  lfo2Out = 0.0f;
 }
 
 void Voice::updateParams(const SynthParams& newParams) {
