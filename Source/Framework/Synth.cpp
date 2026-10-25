@@ -12,8 +12,8 @@ void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
   // Of every voice (even unused)
   for (int v = 0; v < MAX_VOICES; ++v) {
     voices[v].setSampleRate(sampleRate);
-    voices[v].updateParams(p);
     voices[v].reset();
+    voices[v].updateParams(p);
     voices[v].randomizeLfoPhase(v);
   }
 
