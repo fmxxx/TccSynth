@@ -55,8 +55,8 @@ void Voice::reset() {
   envFilterOut = 0.0f;
   envModOut = 0.0f;
 
-  lfo1.reset();
-  lfo2.reset();
+  lfo1.reset();  // Does nothing atm
+  lfo2.reset();  // Does nothing atm
 
   lfo1Out = 0.0f;
   lfo2Out = 0.0f;
