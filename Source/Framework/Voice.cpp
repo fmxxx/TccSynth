@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "../Constants.h"
+#include "../Utils.h"
 
 namespace {
 // Remaps the raw shape parameter so a perfect saw exists in a small window
@@ -118,6 +119,11 @@ void Voice::updateParams(const SynthParams& newParams) {
 
   lfo1.updateParams();
   lfo2.updateParams();
+}
+
+void Voice::randomizeLfoPhase(int seed) {
+  lfo1.setPhase(randomLCG(seed));
+  lfo2.setPhase(randomLCG(seed + 128));
 }
 
 void Voice::advanceLfos() {

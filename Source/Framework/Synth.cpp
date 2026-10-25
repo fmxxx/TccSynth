@@ -14,6 +14,7 @@ void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
     voices[v].setSampleRate(sampleRate);
     voices[v].updateParams(p);
     voices[v].reset();
+    voices[v].randomizeLfoPhase(v);
   }
 
   controlCounter = 1;

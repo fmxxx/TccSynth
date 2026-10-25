@@ -41,6 +41,8 @@ class Voice {
   void reset();
 
   void updateParams(const SynthParams& newParams);
+
+  void randomizeLfoPhase(int seed);
   void advanceLfos();
   void updateSlowMods();
 
