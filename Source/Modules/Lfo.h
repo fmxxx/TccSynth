@@ -11,6 +11,7 @@ class Lfo {
 
   void reset();
   void resetPhase();
+  void setPhase(float newPhase);
 
   void updateParams();
   void setSampleRate(float newSampleRate);

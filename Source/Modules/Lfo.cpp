@@ -15,6 +15,10 @@ void Lfo::resetPhase() {
   phase = 0.0f;
 }
 
+void Lfo::setPhase(float newPhase) {
+  phase = newPhase;
+}
+
 void Lfo::updateParams() {
   phaseInc = (freq * CONTROL_RATE_SAMPLES) / sampleRate;
 }
