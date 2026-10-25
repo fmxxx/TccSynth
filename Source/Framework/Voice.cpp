@@ -212,6 +212,8 @@ void Voice::startNote(float newNote, float newVelocity) {
   envAmp.start();
   envFilter.start();
   envMod.start();
+
+  updateSlowMods();
 }
 
 void Voice::release() {
