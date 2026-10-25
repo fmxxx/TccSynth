@@ -24,15 +24,15 @@ void Lfo::setSampleRate(float newSampleRate) {
 }
 float Lfo::nextSample() {
   float sample = 0.0f;
+  float phaseTri = phase + 0.25f;
 
   switch (shape) {
     case 0:  // Sine
       sample = std::sin(phase * 2.0f * M_PI);
       break;
-    case 1:  // Tri (0 at phase = 0)
-      float p = phase + 0.25f;
-      p -= std::floor(p);
-      sample = 1.0f - 4.0f * std::abs(p - 0.5f);
+    case 1:                              // Tri (0 at phase = 0)
+      phaseTri -= std::floor(phaseTri);  // Wraps into [0, 1]
+      sample = 1.0f - 4.0f * std::abs(phaseTri - 0.5f);
       break;
     case 2:  // Saw (falling, +1 -> -1)
       sample = 1.0f - 2.0f * phase;
