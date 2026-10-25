@@ -31,7 +31,7 @@
   X(osc2Volume, "Osc 2 Volume", 0.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", osc2.volume)                      \
                                                                                                          \
   /* -------------------- Filter -------------------- */                                                 \
-  X(filterAttack, "Filter Attack", 0.1f, 10.0f, 0.001f, 0.1f, 1.0f, "s", filter.attack)                  \
+  X(filterAttack, "Filter Attack", 0.01f, 10.0f, 0.001f, 0.1f, 1.0f, "s", filter.attack)                 \
   X(filterDecay, "Filter Decay", 0.1f, 10.0f, 0.001f, 1.0f, 1.0f, "s", filter.decay)                     \
   X(filterSustain, "Filter Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", filter.sustain)                 \
   X(filterRelease, "Filter Release", 0.1f, 10.0f, 0.001f, 1.0f, 1.0f, "s", filter.release)               \
@@ -41,7 +41,7 @@
   X(filterEnvAmount, "Filter Env Amount", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", filter.envAmount)      \
                                                                                                          \
   /* -------------------- Amp -------------------- */                                                    \
-  X(ampAttack, "Amp Attack", 0.1f, 10.0f, 0.001f, 0.01f, 1.0f, "s", amp.attack)                          \
+  X(ampAttack, "Amp Attack", 0.01f, 10.0f, 0.001f, 0.1f, 1.0f, "s", amp.attack)                          \
   X(ampDecay, "Amp Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.decay)                              \
   X(ampSustain, "Amp Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", amp.sustain)                          \
   X(ampRelease, "Amp Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.release)                        \
@@ -65,7 +65,7 @@
   X(lfo2Shape2, "LFO 2 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape2)                    \
                                                                                                          \
   /* -------------------- Mod Envelope -------------------- */                                           \
-  X(modEnvAttack, "Mod Env Attack", 0.1f, 10.0f, 0.001f, 0.01f, 1.0f, "s", modEnv.attack)                \
+  X(modEnvAttack, "Mod Env Attack", 0.01f, 10.0f, 0.001f, 0.1f, 1.0f, "s", modEnv.attack)                \
   X(modEnvDecay, "Mod Env Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.decay)                    \
   X(modEnvSustain, "Mod Env Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", modEnv.sustain)                \
   X(modEnvRelease, "Mod Env Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.release)              \
