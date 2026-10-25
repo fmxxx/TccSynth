@@ -203,7 +203,7 @@ void Voice::startNote(float newNote, float newVelocity) {
 
   if (lfo2.keytrig) {
     lfo2Out = 0.0f;
-    lfo1.setPhase(0.0f);
+    lfo2.setPhase(0.0f);
   }
 
   envAmp.start();
