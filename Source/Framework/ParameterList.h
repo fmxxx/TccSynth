@@ -79,10 +79,6 @@
   X(velShape2, "Vel Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.shape2)                        \
   X(velCutoff, "Vel Cutoff", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.cutoff)                         \
   X(velResonance, "Vel Resonance", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.resonance)                \
-  X(velAttack, "Vel Attack", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.attack)                         \
-  X(velDecay, "Vel Decay", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.decay)                            \
-  X(velSustain, "Vel Sustain", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.sustain)                      \
-  X(velRelease, "Vel Release", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.release)                      \
                                                                                                          \
   /* -------------------- Global -------------------- */                                                 \
   X(globalGlide, "Glide", 0.0f, 10.0f, 0.1f, 0.0f, 1.0f, "s", global.glide)                              \

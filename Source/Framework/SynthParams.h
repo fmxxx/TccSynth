@@ -59,10 +59,6 @@ struct SynthParams {
           shape2 = 0.0f,
           cutoff = 0.0f,
           resonance = 0.0f;
-    float attack = 0.0f,
-          decay = 0.0f,
-          sustain = 0.0f,
-          release = 0.0f;
   } vel;
 
   struct {
