@@ -1,15 +1,18 @@
 #pragma once
 
-// Simple PRNG that takes an int seed/state and returns a float [0, 1]
-inline float randomLCG(int seed) {
-  // Standard LCG constants (similar to those used in glibc)
-  unsigned int a = 1103515245;
-  unsigned int c = 12345;
-  unsigned int m = 2147483648;  // 2^31
+// Integer hash by Thomas Wang
+// Fast, non-congruential, maps int to a float [0, 1]
+inline float randomHash(int seed) {
+  uint32_t x = static_cast<uint32_t>(seed);
 
-  // Calculate the next pseudo-random integer
-  unsigned int next_int = (a * static_cast<unsigned int>(seed) + c) % m;
+  // Low-latency bit-mixing stages (avalanching)
+  x ^= x >> 16;
+  x *= 0x45d9f3b;  // High-entropy multiplier
+  x ^= x >> 16;
+  x *= 0x45d9f3b;
+  x ^= x >> 16;
 
-  // Map the integer to a float between 0.0 and 1.0
-  return static_cast<float>(next_int) / static_cast<float>(m - 1);
+  // Fast bitwise mapping to float range [0.0, 1.0]
+  // 0x1.0p-32f is a hex float literal representing 1.0 / 2^32
+  return static_cast<float>(x) * 0x1.0p-32f;
 }

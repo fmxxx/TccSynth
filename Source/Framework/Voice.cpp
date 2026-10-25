@@ -122,8 +122,9 @@ void Voice::updateParams(const SynthParams& newParams) {
 }
 
 void Voice::randomizeLfoPhase(int seed) {
-  lfo1.setPhase(randomLCG(seed));
-  lfo2.setPhase(randomLCG(seed + 128));
+  lfo1.setPhase(randomHash(seed));
+  // Offset so no two voices have same seed
+  lfo2.setPhase(randomHash(seed + 128));
 }
 
 void Voice::advanceLfos() {
