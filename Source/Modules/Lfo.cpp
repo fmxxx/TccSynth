@@ -9,6 +9,8 @@
 #include "../Constants.h"
 
 void Lfo::reset() {
+  // Currently nothing needs to be reset
+  // Phase reset (if lfo keytrigger is on) is handled by setPhase()
 }
 
 void Lfo::setPhase(float newPhase) {
