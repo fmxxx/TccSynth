@@ -93,7 +93,6 @@ void Voice::updateParams(const SynthParams& newParams) {
   envAmp.attackFromZero = p.amp.attackFromZero;
 
   // --- Mod Envelope ---
-  // voiceFreq handled in updateParams()
   envMod.attackMs = p.modEnv.attack * 1000;
   envMod.decayMs = p.modEnv.decay * 1000;
   envMod.sustain = p.modEnv.sustain;
