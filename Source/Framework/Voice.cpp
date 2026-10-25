@@ -132,10 +132,12 @@ void Voice::advanceLfos() {
   lfo2Out = lfo2.nextSample();
 }
 
-void Voice::updateSlowMods() {
+void Voice::advanceModEnvs() {
   envFilterOut = envFilter.nextSample();
   envModOut = envMod.nextSample();
+}
 
+void Voice::updateSlowMods() {
   // TODO apply modulation to parameters
   // --- Osc 1 --- //
   float osc1ShapeModSum = (p.modEnv.shape1 * envModOut +

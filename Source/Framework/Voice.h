@@ -44,6 +44,7 @@ class Voice {
 
   void randomizeLfoPhase(int seed);
   void advanceLfos();
+  void advanceModEnvs();  // envMod and envFilter
   void updateSlowMods();
 
   void setSampleRate(float newSampleRate);
