@@ -145,7 +145,7 @@ void Voice::updateSlowMods() {
                            p.lfo2.shape1 * lfo2Out +
                            p.vel.shape1 * velocityNorm);
   osc1ShapeModSum = osc1ShapeModSum * 0.01f;
-  osc1.applyModulations(osc1ShapeModSum, 0);
+  osc1.applyModulations(osc1ShapeModSum, 0.0f);
 
   // --- Osc 2 --- //
   float osc2ShapeModSum = (p.modEnv.shape2 * envModOut +
