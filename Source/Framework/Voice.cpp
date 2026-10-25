@@ -39,7 +39,7 @@ inline float applyShapeDeadZone(float s) {
 
 void Voice::reset() {
   note = 0;
-  velocity = 0;
+  velocityNorm = 0.0f;
   osc1period = 0.0f;
   osc2period = 0.0f;
   pitchModOctaves = 0.0f;
@@ -181,8 +181,8 @@ void Voice::setSampleRate(float newSampleRate) {
 
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
-  velocity = newVelocity;
-  envAmp.velocityNorm = velocity / 127.0f;
+  velocityNorm = newVelocity / 127.0f;
+  envAmp.velocityNorm = velocityNorm;
 
   osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);

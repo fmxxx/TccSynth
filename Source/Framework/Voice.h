@@ -15,7 +15,7 @@ class Voice {
  public:
   // ------ Midi Inputs ------ //
   float note = 0.0f;
-  float velocity = 0.0f;
+  float velocityNorm = 0.0f;  // [0,1]
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
   float envModOut = 0.0f;
