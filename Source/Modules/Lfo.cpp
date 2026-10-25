@@ -11,10 +11,6 @@
 void Lfo::reset() {
 }
 
-void Lfo::resetPhase() {
-  phase = 0.0f;
-}
-
 void Lfo::setPhase(float newPhase) {
   phase = newPhase;
 }

@@ -10,7 +10,6 @@ class Lfo {
   float amplitude = 1.0f;  // [0,1]
 
   void reset();
-  void resetPhase();
   void setPhase(float newPhase);
 
   void updateParams();
