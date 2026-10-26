@@ -15,7 +15,6 @@ class Voice {
  public:
   // ------ Midi Inputs ------ //
   float note = 0.0f;
-  float noteCentered = 0.0f;  // C-2 = -1 , E4 = 0, G8 ~~ 0.9
   float velocityNorm = 0.0f;  // [0,1]
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
@@ -63,6 +62,8 @@ class Voice {
   float osc1period = 0.0f;  // Amount of samples in one cycle
   float osc2period = 0.0f;  // Amount of samples in one cycle
   float pitchModOctaves = 0.0f;
+
+  float trackingCallibration = 0.0;  // Used to make keytrack fit note to hz curve when filter cutoff is at its min value
 
   float periodFromNote(float note, float semitone, float cents) const;
 };

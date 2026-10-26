@@ -1,5 +1,7 @@
 #include "Voice.h"
 
+#include <JuceHeader.h>
+
 #include <algorithm>
 #include <cmath>
 
@@ -118,6 +120,12 @@ void Voice::updateParams() {
   lfo2.keytrig = p.lfo2.keytrig;
   lfo2.amplitude = p.lfo2.amplitude * 0.01f;
   lfo2.updateParams();
+
+  // --- Global ---
+  // Used to tune the keytracked filter to same hz as oscillators
+  // 20.0f is the lowest filter cutoff, make sure to update it
+  // if ParamaterList changes
+  trackingCallibration = p.global.tuning / (20.0f * std::exp2(69.0f / 12.0f));
 }
 
 void Voice::randomizeLfoPhase(int seed) {
@@ -159,6 +167,14 @@ void Voice::updateSlowMods() {
   osc2.amplitude = std::clamp(p.osc2.volume * 0.01f + osc2VolModSum, 0.0f, 1.0f);
 
   // --- Filter --- //
+  // Keytracking behavior: when cutoff is at its min value and keytracking = 1
+  // the filter should be perfectly in tune with the keyboard
+  float k = p.filter.keytrack * 0.01f;
+  float f = p.filter.cutoff;
+  float cutoffKeytracked = f * std::exp2(k * note / 12.0f) * trackingCallibration;
+
+  filter.cutoffFreq = std::clamp(cutoffKeytracked, 20.0f, 20000.0f);
+  filter.updateParams();
 
   // --- Global --- //
 
@@ -191,7 +207,6 @@ void Voice::setSampleRate(float newSampleRate) {
 
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
-  noteCentered = (note - 64) / 64;  // Useful for keytracking
   velocityNorm = newVelocity / 127.0f;
   envAmp.velocityNorm = velocityNorm;
 
