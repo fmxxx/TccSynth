@@ -13,7 +13,8 @@ void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
   for (int v = 0; v < MAX_VOICES; ++v) {
     voices[v].setSampleRate(sampleRate);
     voices[v].reset();
-    voices[v].updateParams(p);
+    voices[v].importParams(p);
+    voices[v].updateParams();
     voices[v].randomizeLfoPhase(v);
   }
 
@@ -33,7 +34,8 @@ void Synth::updateVoicesParams() {
     setPolyphony(p.global.voiceCount);
   }
   for (int v = 0; v < polyphony; ++v) {
-    voices[v].updateParams(p);
+    voices[v].importParams(p);
+    voices[v].updateParams();
   }
 };
 

@@ -62,67 +62,61 @@ void Voice::reset() {
   lfo2Out = 0.0f;
 }
 
-void Voice::updateParams(const SynthParams& newParams) {
+void Voice::importParams(const SynthParams& newParams) {
   p = newParams;
+}
 
+void Voice::updateParams() {
   // --- Oscillators ---
-  // Pitch is calculated from the note and these parameters when a note starts.
+  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc1.shape = applyShapeDeadZone(p.osc1.shape);
-  osc1.amplitude = p.osc1.volume / 100.0f;
+  osc1.amplitude = p.osc1.volume * 0.01f;
 
+  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
   osc2.shape = applyShapeDeadZone(p.osc2.shape);
-  osc2.amplitude = p.osc2.volume / 100.0f;
+  osc2.amplitude = p.osc2.volume * 0.01f;
 
   // --- Filter ---
   filter.cutoffFreq = p.filter.cutoff;
-  filter.resonance = p.filter.resonance / 100.0f;
+  filter.resonance = p.filter.resonance * 0.01f;
+  filter.updateParams();
 
   envFilter.attackMs = p.filter.attack * 1000;
   envFilter.decayMs = p.filter.decay * 1000;
   envFilter.sustain = p.filter.sustain;
   envFilter.releaseMs = p.filter.release * 1000;
+  envFilter.updateParams();
 
   // --- Amp ---
-  amp.volume = p.amp.volume / 100.0f;
+  amp.volume = p.amp.volume * 0.01f;
+  envAmp.velocitySens = p.amp.velocity * 0.01f;
+  envAmp.attackFromZero = p.amp.attackFromZero;
 
-  envAmp.velocitySens = p.amp.velocity / 100.0f;
   envAmp.attackMs = p.amp.attack * 1000;
   envAmp.decayMs = p.amp.decay * 1000;
   envAmp.sustain = p.amp.sustain;
   envAmp.releaseMs = p.amp.release * 1000;
-  envAmp.attackFromZero = p.amp.attackFromZero;
+  envAmp.updateParams();
 
   // --- Mod Envelope ---
   envMod.attackMs = p.modEnv.attack * 1000;
   envMod.decayMs = p.modEnv.decay * 1000;
   envMod.sustain = p.modEnv.sustain;
   envMod.releaseMs = p.modEnv.release * 1000;
+  envMod.updateParams();
 
   // --- LFO 1 ---
-  // TODO figure out how to handle voiceFreq
-
   lfo1.freq = p.lfo1.rate;
   lfo1.shape = p.lfo1.shape;
   lfo1.keytrig = p.lfo1.keytrig;
-  lfo1.amplitude = p.lfo1.amplitude / 100.0f;
+  lfo1.amplitude = p.lfo1.amplitude * 0.01f;
+  lfo1.updateParams();
 
   // --- LFO 2 ---
   lfo2.freq = p.lfo2.rate;
   lfo2.shape = p.lfo2.shape;
   lfo2.keytrig = p.lfo2.keytrig;
-  lfo2.amplitude = p.lfo2.amplitude / 100.0f;
-
-  // After the assignments above:
-  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
-  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
-
-  filter.updateParams();
-
-  envAmp.updateParams();
-  envFilter.updateParams();
-  envMod.updateParams();
-
-  lfo1.updateParams();
+  lfo2.amplitude = p.lfo2.amplitude * 0.01f;
   lfo2.updateParams();
 }
 
