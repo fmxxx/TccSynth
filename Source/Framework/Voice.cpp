@@ -1,9 +1,12 @@
 #include "Voice.h"
 
+#include <JuceHeader.h>
+
 #include <algorithm>
 #include <cmath>
 
 #include "../Constants.h"
+#include "../Utils.h"
 
 namespace {
 // Remaps the raw shape parameter so a perfect saw exists in a small window
@@ -38,7 +41,7 @@ inline float applyShapeDeadZone(float s) {
 
 void Voice::reset() {
   note = 0;
-  velocity = 0;
+  velocityNorm = 0.0f;
   osc1period = 0.0f;
   osc2period = 0.0f;
   pitchModOctaves = 0.0f;
@@ -51,73 +54,84 @@ void Voice::reset() {
   envFilter.reset();
   envMod.reset();
 
-  lfo1.reset();
-  lfo2.reset();
+  envFilterOut = 0.0f;
+  envModOut = 0.0f;
+
+  lfo1.reset();  // Does nothing atm
+  lfo2.reset();  // Does nothing atm
+
+  lfo1Out = 0.0f;
+  lfo2Out = 0.0f;
 }
 
-void Voice::updateParams(const SynthParams& newParams) {
+void Voice::importParams(const SynthParams& newParams) {
   p = newParams;
+}
 
+void Voice::updateParams() {
   // --- Oscillators ---
-  // Pitch is calculated from the note and these parameters when a note starts.
+  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc1.shape = applyShapeDeadZone(p.osc1.shape);
-  osc1.amplitude = p.osc1.volume / 100.0f;
+  osc1.amplitude = p.osc1.volume * 0.01f;
 
+  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
   osc2.shape = applyShapeDeadZone(p.osc2.shape);
-  osc2.amplitude = p.osc2.volume / 100.0f;
+  osc2.amplitude = p.osc2.volume * 0.01f;
 
   // --- Filter ---
   filter.cutoffFreq = p.filter.cutoff;
-  filter.resonance = p.filter.resonance / 100.0f;
+  filter.resonance = p.filter.resonance * 0.01f;
+  filter.updateParams();
 
-  envFilter.attackMs = p.filter.attack;
-  envFilter.decayMs = p.filter.decay;
+  envFilter.attackMs = p.filter.attack * 1000;
+  envFilter.decayMs = p.filter.decay * 1000;
   envFilter.sustain = p.filter.sustain;
-  envFilter.releaseMs = p.filter.release;
+  envFilter.releaseMs = p.filter.release * 1000;
+  envFilter.updateParams();
 
   // --- Amp ---
-  amp.volume = p.amp.volume / 100.0f;
-
-  envAmp.velocitySens = p.amp.velocity / 100.0f;
-  envAmp.attackMs = p.amp.attack;
-  envAmp.decayMs = p.amp.decay;
-  envAmp.sustain = p.amp.sustain;
-  envAmp.releaseMs = p.amp.release;
+  amp.volume = p.amp.volume * 0.01f;
+  envAmp.velocitySens = p.amp.velocity * 0.01f;
   envAmp.attackFromZero = p.amp.attackFromZero;
 
+  envAmp.attackMs = p.amp.attack * 1000;
+  envAmp.decayMs = p.amp.decay * 1000;
+  envAmp.sustain = p.amp.sustain;
+  envAmp.releaseMs = p.amp.release * 1000;
+  envAmp.updateParams();
+
   // --- Mod Envelope ---
-  // voiceFreq handled in updateParams()
-  envMod.attackMs = p.modEnv.attack;
-  envMod.decayMs = p.modEnv.decay;
+  envMod.attackMs = p.modEnv.attack * 1000;
+  envMod.decayMs = p.modEnv.decay * 1000;
   envMod.sustain = p.modEnv.sustain;
-  envMod.releaseMs = p.modEnv.release;
+  envMod.releaseMs = p.modEnv.release * 1000;
+  envMod.updateParams();
 
   // --- LFO 1 ---
-  // TODO figure out how to handle voiceFreq
-
   lfo1.freq = p.lfo1.rate;
   lfo1.shape = p.lfo1.shape;
   lfo1.keytrig = p.lfo1.keytrig;
-  lfo1.amplitude = p.lfo1.amplitude / 100.0f;
+  lfo1.amplitude = p.lfo1.amplitude * 0.01f;
+  lfo1.updateParams();
 
   // --- LFO 2 ---
   lfo2.freq = p.lfo2.rate;
   lfo2.shape = p.lfo2.shape;
   lfo2.keytrig = p.lfo2.keytrig;
-  lfo2.amplitude = p.lfo2.amplitude / 100.0f;
-
-  // After the assignments above:
-  osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
-  osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
-
-  filter.updateParams();
-
-  envAmp.updateParams();
-  envFilter.updateParams();
-  envMod.updateParams();
-
-  lfo1.updateParams();
+  lfo2.amplitude = p.lfo2.amplitude * 0.01f;
   lfo2.updateParams();
+
+  // --- Global ---
+  // Used to tune the keytracked filter to same hz as oscillators
+  // 20.0f is the lowest filter cutoff, make sure to update it
+  // if ParamaterList changes
+  trackingCallibration = p.global.tuning / (20.0f * std::exp2(69.0f / 12.0f));
+}
+
+void Voice::randomizeLfoPhase(int seed) {
+  lfo1.setPhase(randomHash(seed));
+  // Offset so no two voices have same seed
+  lfo2.setPhase(randomHash(seed + 128));
 }
 
 void Voice::advanceLfos() {
@@ -125,24 +139,42 @@ void Voice::advanceLfos() {
   lfo2Out = lfo2.nextSample();
 }
 
-void Voice::updateSlowMods() {
+void Voice::advanceModEnvs() {
   envFilterOut = envFilter.nextSample();
   envModOut = envMod.nextSample();
+}
 
+void Voice::updateSlowMods() {
   // TODO apply modulation to parameters
   // --- Osc 1 --- //
-  float osc1ShapeModSum = (p.modEnv.shape1 * envModOut + p.lfo1.shape1 * lfo1Out + p.lfo2.shape1 * lfo2Out);
-  osc1ShapeModSum = osc1ShapeModSum * 0.01f;
-  osc1.applyModulations(osc1ShapeModSum, 0);
+  float osc1ShapeModSum = (p.modEnv.shape1 * envModOut +
+                           p.lfo1.shape1 * lfo1Out +
+                           p.lfo2.shape1 * lfo2Out +
+                           p.vel.shape1 * velocityNorm) *
+                          0.01f;
+
+  osc1.shape = std::clamp(p.osc1.shape + osc1ShapeModSum, -1.0f, 1.0f);
 
   // --- Osc 2 --- //
-  float osc2ShapeModSum = (p.modEnv.shape2 * envModOut + p.lfo1.shape2 * lfo1Out + p.lfo2.shape2 * lfo2Out);
-  osc2ShapeModSum = osc2ShapeModSum * 0.01f;
-  float osc2VolSum = p.modEnv.osc2Volume * 0.01f + envModOut;
-  osc2VolSum = osc2VolSum * 0.01f;
-  osc2.applyModulations(osc2ShapeModSum, osc2VolSum);
+  float osc2ShapeModSum = (p.modEnv.shape2 * envModOut +
+                           p.lfo1.shape2 * lfo1Out +
+                           p.lfo2.shape2 * lfo2Out +
+                           p.vel.shape2 * velocityNorm) *
+                          0.01f;
+  float osc2VolModSum = (p.modEnv.osc2Volume * 0.01f + envModOut) * 0.01f;
+
+  osc2.shape = std::clamp(p.osc2.shape + osc2ShapeModSum, -1.0f, 1.0f);
+  osc2.amplitude = std::clamp(p.osc2.volume * 0.01f + osc2VolModSum, 0.0f, 1.0f);
 
   // --- Filter --- //
+  // Keytracking behavior: when cutoff is at its min value and keytracking = 1
+  // the filter should be perfectly in tune with the keyboard
+  float k = p.filter.keytrack * 0.01f;
+  float f = p.filter.cutoff;
+  float cutoffKeytracked = f * std::exp2(k * note / 12.0f) * trackingCallibration;
+
+  filter.cutoffFreq = std::clamp(cutoffKeytracked, 20.0f, 20000.0f);
+  filter.updateParams();
 
   // --- Global --- //
 
@@ -175,8 +207,8 @@ void Voice::setSampleRate(float newSampleRate) {
 
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
-  velocity = newVelocity;
-  envAmp.velocityNorm = velocity / 127.0f;
+  velocityNorm = newVelocity / 127.0f;
+  envAmp.velocityNorm = velocityNorm;
 
   osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
@@ -186,17 +218,19 @@ void Voice::startNote(float newNote, float newVelocity) {
 
   if (lfo1.keytrig) {
     lfo1Out = 0.0f;
-    lfo1.resetPhase();
+    lfo1.setPhase(0.0f);
   }
 
   if (lfo2.keytrig) {
     lfo2Out = 0.0f;
-    lfo2.resetPhase();
+    lfo2.setPhase(0.0f);
   }
 
   envAmp.start();
   envFilter.start();
   envMod.start();
+
+  updateSlowMods();
 }
 
 void Voice::release() {

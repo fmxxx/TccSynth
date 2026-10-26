@@ -6,17 +6,14 @@ class Filter {
   // ------ Exposed Parameters ------ //
   float cutoffFreq = 20000.0f;
   float resonance = 0.0f;  // [0, 1], 0 = no resonance, 1 = self-oscillation
-  float keytrack = 0.0f;   // [-1, 1]
-  float envAmt = 0.0f;     // [-1, 1]
-
-  // ------ Modulations (block-rate) ------ //
-  float cutoffFreqModAmt = 0.0f;  // [-1, 1]
-  float resonanceModAmt = 0.0f;   // [-1, 1]
 
   Filter();
   void reset();
-  void updateParams();
   void setsampleRate(float newsampleRate);
+
+  void updateParams();
+  void applyModulations(float cutoffMod, float resonanceMod);
+
   float nextSample(float input);
 
  private:
@@ -41,4 +38,6 @@ class Filter {
   float s2 = 0.0f;
   float s3 = 0.0f;
   float s4 = 0.0f;
+
+  void calcCoefs();
 };

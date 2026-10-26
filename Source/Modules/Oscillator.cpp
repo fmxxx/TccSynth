@@ -5,21 +5,11 @@
 
 #include <algorithm>
 
-// Eff means "effective", the value after all modulation is applied
 Oscillator::Oscillator()
     : shape(0.0f),
       amplitude(1.0f),
       phaseInc(0.0f),
-      shapeEff(0.0f),
-      ampEff(1.0f),
       phase(0.0f) {}
-
-// --- --- Control-rate updates (called by the Voice) --- --- //
-
-void Oscillator::applyModulations(float shapeMod, float volMod) {
-  shapeEff = std::clamp(shape + shapeMod, -1.0f, 1.0f);
-  ampEff = std::clamp(amplitude + volMod, 0.0f, 1.0f);
-}
 
 // --- --- Lifecycle --- --- //
 
@@ -79,10 +69,10 @@ float Oscillator::nextSample() {
   const float dt = phaseInc;
   float out = 0.0f;
 
-  if (shapeEff < 0.0f) {
+  if (shape < 0.0f) {
     // ----- Saw to triangle morph -----
     // slant: 1.0 at shape = 0, 0.5 at shape = -1.
-    const float slant = 1.0f + 0.5f * shapeEff;
+    const float slant = 1.0f + 0.5f * shape;
     const float sawA = 2.0f * phase - 1.0f;
     out = triangleShape(sawA, slant);
   } else {
@@ -93,16 +83,16 @@ float Oscillator::nextSample() {
     float offsetB = 0.0f;
     float add = 0.0f;
 
-    if (shapeEff <= 0.5f) {
+    if (shape <= 0.5f) {
       // Fade SawB in; at shape = 0.5 the two saws cancel into a square.
-      mix = shapeEff * 2.0f;  // 0 .. 1
-      offsetB = 0.5f;         // B is half a cycle behind A
+      mix = shape * 2.0f;  // 0 .. 1
+      offsetB = 0.5f;      // B is half a cycle behind A
       add = 0.0f;
     } else {
       // Shift SawB further to narrow the high-duty pulse.
       // offsetB: 0.5 (50% duty) .. 0.01 (1% high duty).
       mix = 1.0f;
-      offsetB = 0.5f - (shapeEff - 0.5f) * 0.98f;
+      offsetB = 0.5f - (shape - 0.5f) * 0.98f;
       add = 2.0f * offsetB - 1.0f;  // DC offset to keep output centered
     }
 
@@ -119,6 +109,6 @@ float Oscillator::nextSample() {
   if (phase >= 1.0f) phase -= 1.0f;
   if (phase < 0.0f) phase += 1.0f;
 
-  out *= ampEff;
+  out *= amplitude;
   return out;
 }

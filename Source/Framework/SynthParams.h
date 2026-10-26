@@ -14,7 +14,7 @@ struct SynthParams {
   struct {
     float attack = 0.1f,
           decay = 1.0f,
-          sustain = 5.0f,
+          sustain = 0.5f,
           release = 1.0f;
     float cutoff = 20000.0f,
           resonance = 0.0f,
@@ -23,9 +23,9 @@ struct SynthParams {
   } filter;
 
   struct {
-    float attack = 0.01f,
+    float attack = 0.1f,
           decay = 0.5f,
-          sustain = 5.0f,
+          sustain = 0.5f,
           release = 0.5f;
     bool attackFromZero = false;
     float velocity = 50.0f,
@@ -44,9 +44,9 @@ struct SynthParams {
   } lfo1, lfo2;
 
   struct {
-    float attack = 0.01f,
+    float attack = 0.1f,
           decay = 0.5f,
-          sustain = 5.0f,
+          sustain = 0.5f,
           release = 0.5f;
     float osc2Volume = 0.0f,
           voiceFreq = 0.0f,
@@ -59,10 +59,6 @@ struct SynthParams {
           shape2 = 0.0f,
           cutoff = 0.0f,
           resonance = 0.0f;
-    float attack = 0.0f,
-          decay = 0.0f,
-          sustain = 0.0f,
-          release = 0.0f;
   } vel;
 
   struct {

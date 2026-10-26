@@ -12,8 +12,10 @@ void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
   // Of every voice (even unused)
   for (int v = 0; v < MAX_VOICES; ++v) {
     voices[v].setSampleRate(sampleRate);
-    voices[v].updateParams(p);
     voices[v].reset();
+    voices[v].importParams(p);
+    voices[v].updateParams();
+    voices[v].randomizeLfoPhase(v);
   }
 
   controlCounter = 1;
@@ -32,7 +34,8 @@ void Synth::updateVoicesParams() {
     setPolyphony(p.global.voiceCount);
   }
   for (int v = 0; v < polyphony; ++v) {
-    voices[v].updateParams(p);
+    voices[v].importParams(p);
+    voices[v].updateParams();
   }
 };
 
@@ -45,7 +48,10 @@ void Synth::render(float** outputBuffers, int sampleCount) {
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
       for (int v = 0; v < polyphony; ++v) {
-        voices[v].advanceLfos();  // Advance lfos even in inactive voices
+        // Do even in inactive voices
+        voices[v].advanceLfos();
+        voices[v].advanceModEnvs();
+        // Do only in active voices
         if (voices[v].isActive()) {
           voices[v].updateSlowMods();  // update envs and mod amounts
         }
@@ -152,12 +158,13 @@ int Synth::findNewVoice(float note) const {
 
   for (int i = 0; i < polyphony; ++i) {
     if (!voices[i].envAmp.isAttack()) {
-      if (voices[i].envAmp.getCurrentLevel() < l)
-        l = voices[i].envAmp.getCurrentLevel();
-      v = i;
+      const float level = voices[i].envAmp.getCurrentLevel();
+      if (level < l) {
+        l = level;
+        v = i;
+      }
     }
   }
-
   return v;
 }
 

@@ -15,7 +15,7 @@ class Voice {
  public:
   // ------ Midi Inputs ------ //
   float note = 0.0f;
-  float velocity = 0.0f;
+  float velocityNorm = 0.0f;  // [0,1]
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
   float envModOut = 0.0f;
@@ -40,8 +40,12 @@ class Voice {
 
   void reset();
 
-  void updateParams(const SynthParams& newParams);
+  void importParams(const SynthParams& newParams);
+  void updateParams();
+
+  void randomizeLfoPhase(int seed);
   void advanceLfos();
+  void advanceModEnvs();  // envMod and envFilter
   void updateSlowMods();
 
   void setSampleRate(float newSampleRate);
@@ -58,6 +62,8 @@ class Voice {
   float osc1period = 0.0f;  // Amount of samples in one cycle
   float osc2period = 0.0f;  // Amount of samples in one cycle
   float pitchModOctaves = 0.0f;
+
+  float trackingCallibration = 0.0;  // Used to make keytrack fit note to hz curve when filter cutoff is at its min value
 
   float periodFromNote(float note, float semitone, float cents) const;
 };

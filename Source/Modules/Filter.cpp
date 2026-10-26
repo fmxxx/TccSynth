@@ -15,16 +15,25 @@ void Filter::reset() {
   s4 = 0.0f;
 }
 
-void Filter::updateParams() {
-  const float safeSampleRate = std::max(sampleRate, 1.0f);
-  const float safeCutoff = std::isfinite(cutoffFreq) ? cutoffFreq : 20000.0f;
-  const float frequency = std::clamp(safeCutoff, 1.0f, safeSampleRate * 0.49f);
-  const float safeResonance = std::isfinite(resonance) ? resonance : 0.0f;
+void Filter::setsampleRate(float newSampleRate) {
+  sampleRate = std::max(newSampleRate, 1.0f);
+  updateParams();
+}
 
-  g = std::tan(M_PI * frequency / safeSampleRate);
+void Filter::updateParams() {
+  cutoffFreq = std::isfinite(cutoffFreq) ? cutoffFreq : 20000.0f;
+  cutoffFreq = std::clamp(cutoffFreq, 1.0f, sampleRate * 0.49f);
+  resonance = std::isfinite(resonance) ? resonance : 0.0f;
+  resonance = std::clamp(resonance, 0.0f, 1.0f);
+
+  calcCoefs();
+}
+
+void Filter::calcCoefs() {
+  g = std::tan(M_PI * cutoffFreq / sampleRate);
   G = g / (1.0f + g);
   G4 = G * G * G * G;
-  k = 4.0f * std::clamp(safeResonance, 0.0f, 1.0f);
+  k = 4.0f * resonance;
 
   const float oneMinusG = 1.0f - G;
   c1 = G * G * G * oneMinusG;
@@ -33,11 +42,6 @@ void Filter::updateParams() {
   c4 = oneMinusG;
 
   oneOverOnePlusKG4 = 1.0f / (1.0f + k * G4);
-}
-
-void Filter::setsampleRate(float newSampleRate) {
-  sampleRate = newSampleRate;
-  updateParams();
 }
 
 float Filter::nextSample(float input) {

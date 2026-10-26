@@ -5,8 +5,8 @@ class Oscillator {
   Oscillator();
 
   // ------ Exposed Parameters ------ //
-  float shape;      // -1: tri; 0: saw; 0.5: square; 1: narrow pulse
-  float amplitude;  // [0, 1]
+  float shape = 0.0f;      // -1: tri; 0: saw; 0.5: square; 1: narrow pulse
+  float amplitude = 0.0f;  // [0, 1]
 
   // Phase increment, normalized phase per sample (cycles/sample).
   //   phaseInc = frequency / sampleRate
@@ -22,12 +22,7 @@ class Oscillator {
   float nextSample();
 
  private:
-  // -------- Applied values (set by applyModulations) -------- //
-  float shapeEff;
-  float ampEff;
-
-  const float phaseMax = 1.0f;  // Phase goes up to this value
-  float phase;                  // [0, 1)
+  float phase;  // [0, 1)
 
   // Internal helpers
   float saw(float p, float dt);

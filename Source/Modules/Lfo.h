@@ -10,7 +10,7 @@ class Lfo {
   float amplitude = 1.0f;  // [0,1]
 
   void reset();
-  void resetPhase();
+  void setPhase(float newPhase);
 
   void updateParams();
   void setSampleRate(float newSampleRate);
@@ -20,7 +20,6 @@ class Lfo {
  private:
   float sampleRate = 44100.0f;
 
-  const float phaseMax = 1.0f;  // Phase goes up to this value
-  float phase = 0.0f;           // [0, 1]
-  float phaseInc = 0.0f;        // Phase increment
+  float phase = 0.0f;     // [0, 1]
+  float phaseInc = 0.0f;  // Phase increment
 };
