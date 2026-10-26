@@ -29,18 +29,11 @@ void Filter::updateParams() {
   calcCoefs();
 }
 
-void Filter::applyModulations(float cutoffMod, float resonanceMod) {
-  cutoffFreqEff = std::clamp(cutoffFreq + cutoffMod, 1.0f, sampleRate * 0.49f);
-  resonanceEff = std::clamp(resonance + resonanceMod, 0.0f, 1.0f);
-
-  calcCoefs();
-}
-
 void Filter::calcCoefs() {
-  g = std::tan(M_PI * cutoffFreqEff / sampleRate);
+  g = std::tan(M_PI * cutoffFreq / sampleRate);
   G = g / (1.0f + g);
   G4 = G * G * G * G;
-  k = 4.0f * resonanceEff;
+  k = 4.0f * resonance;
 
   const float oneMinusG = 1.0f - G;
   c1 = G * G * G * oneMinusG;

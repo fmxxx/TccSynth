@@ -6,12 +6,6 @@ class Filter {
   // ------ Exposed Parameters ------ //
   float cutoffFreq = 20000.0f;
   float resonance = 0.0f;  // [0, 1], 0 = no resonance, 1 = self-oscillation
-  float keytrack = 0.0f;   // [-1, 1]
-  float envAmt = 0.0f;     // [-1, 1]
-
-  // ------ Modulations (block-rate) ------ //
-  float cutoffFreqModAmt = 0.0f;  // [-1, 1]
-  float resonanceModAmt = 0.0f;   // [-1, 1]
 
   Filter();
   void reset();
@@ -24,9 +18,6 @@ class Filter {
 
  private:
   float sampleRate = 44100.0f;
-
-  float cutoffFreqEff = 20000.0f;  // Modulated cutoff
-  float resonanceEff = 0.0f;       // Modulated resonance
 
   // ------ Precomputed coefficients (calculated in updateParams) ------ //
   float g = 0.0f;   // tan(pi * fc / fs) — the ZDF frequency warp
