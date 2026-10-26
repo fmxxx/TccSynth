@@ -38,7 +38,7 @@
   X(filterCutoff, "Filter Cutoff", 20.0f, 20000.0f, 0.1f, 20000.0f, 1000.0f, "Hz", filter.cutoff)        \
   X(filterResonance, "Filter Resonance", 0.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", filter.resonance)          \
   X(filterKeytrack, "Filter Keytrack", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", filter.keytrack)          \
-  X(filterEnvAmount, "Filter Env Amount", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", filter.envAmount)      \
+  X(filterEnvAmount, "Filter Env Amount", -20000.0f, 20000.0f, 1.0f, 0.0f, 0.0f, "%", filter.envAmount)  \
                                                                                                          \
   /* -------------------- Amp -------------------- */                                                    \
   X(ampAttack, "Amp Attack", 0.001f, 10.0f, 0.001f, 0.1f, 1.0f, "s", amp.attack)                         \
