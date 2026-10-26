@@ -173,9 +173,10 @@ void Voice::updateSlowMods() {
   float f = p.filter.cutoff;
   float cutoffKeytracked = f * std::exp2(k * note / 12.0f) * trackingCallibration;
 
-  float cutoffModSum = (p.filter.envAmount * envFilterOut
-
-  );
+  float cutoffModSum = (p.filter.envAmount * envFilterOut +
+                        std::pow(p.lfo1.cutoffFreq, 2.0f) * lfo1Out +
+                        std::pow(p.lfo2.cutoffFreq, 2.0f) * lfo2Out +
+                        p.vel.cutoff * velocityNorm * 200.0f);
   cutoffModSum += cutoffKeytracked;
 
   filter.cutoffFreq = std::clamp(cutoffModSum, 20.0f, 20000.0f);
