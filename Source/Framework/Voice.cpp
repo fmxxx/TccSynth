@@ -142,19 +142,21 @@ void Voice::updateSlowMods() {
   float osc1ShapeModSum = (p.modEnv.shape1 * envModOut +
                            p.lfo1.shape1 * lfo1Out +
                            p.lfo2.shape1 * lfo2Out +
-                           p.vel.shape1 * velocityNorm);
-  osc1ShapeModSum = osc1ShapeModSum * 0.01f;
-  osc1.applyModulations(osc1ShapeModSum, 0.0f);
+                           p.vel.shape1 * velocityNorm) *
+                          0.01f;
+
+  osc1.shape = std::clamp(p.osc1.shape + osc1ShapeModSum, -1.0f, 1.0f);
 
   // --- Osc 2 --- //
   float osc2ShapeModSum = (p.modEnv.shape2 * envModOut +
                            p.lfo1.shape2 * lfo1Out +
                            p.lfo2.shape2 * lfo2Out +
-                           p.vel.shape2 * velocityNorm);
-  osc2ShapeModSum = osc2ShapeModSum * 0.01f;
-  float osc2VolSum = p.modEnv.osc2Volume * 0.01f + envModOut;
-  osc2VolSum = osc2VolSum * 0.01f;
-  osc2.applyModulations(osc2ShapeModSum, osc2VolSum);
+                           p.vel.shape2 * velocityNorm) *
+                          0.01f;
+  float osc2VolModSum = (p.modEnv.osc2Volume * 0.01f + envModOut) * 0.01f;
+
+  osc2.shape = std::clamp(p.osc2.shape + osc2ShapeModSum, -1.0f, 1.0f);
+  osc2.amplitude = std::clamp(p.osc2.volume * 0.01f + osc2VolModSum, 0.0f, 1.0f);
 
   // --- Filter --- //
 
