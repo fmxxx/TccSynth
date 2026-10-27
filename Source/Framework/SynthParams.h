@@ -5,7 +5,7 @@
 
 struct SynthParams {
   struct {
-    float semitone = 0.0f,
+    float semitones = 0.0f,
           cents = 0.0f,
           shapeFctr = 0.0f,
           volPct = 100.0f;
