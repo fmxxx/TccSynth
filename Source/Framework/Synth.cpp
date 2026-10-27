@@ -124,7 +124,7 @@ void Synth::noteOff(float note) {
   for (int v = 0; v < polyphony; ++v) {
     if (voices[v].note == note) {
       // TODO: Check for sustain pedal?
-      DBG("Note off: " << note << " voice=" << voice << " vel=" << velocity);
+      DBG("Note off: " << note << " voice=" << v);
       voices[v].release();
     }
   }
