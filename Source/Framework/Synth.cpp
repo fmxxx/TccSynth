@@ -123,7 +123,6 @@ void Synth::noteOff(float note) {
     if (voices[v].note == note) {
       // TODO: Check for sustain pedal?
       voices[v].release();
-      voices[v].note = 0;
     }
   }
 }
