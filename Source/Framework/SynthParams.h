@@ -5,65 +5,65 @@
 
 struct SynthParams {
   struct {
-    float semitone = 0.0f,
+    float semitones = 0.0f,
           cents = 0.0f,
-          shape = 0.0f,
-          volume = 100.0f;
+          shapeFctr = 0.0f,
+          volPct = 100.0f;
   } osc1, osc2;
 
   struct {
-    float attack = 0.1f,
-          decay = 1.0f,
-          sustain = 0.5f,
-          release = 1.0f;
-    float cutoff = 20000.0f,
-          resonance = 0.0f,
-          keytrack = 0.0f,
-          envAmount = 0.0f;
+    float attackSecs = 0.1f,
+          decaySecs = 1.0f,
+          sustainFctr = 0.5f,
+          releaseSecs = 1.0f;
+    float cutoffHz = 20000.0f,
+          resonancePct = 0.0f,
+          keytrackPct = 0.0f,
+          envAmountHz = 0.0f;
   } filter;
 
   struct {
-    float attack = 0.1f,
-          decay = 0.5f,
-          sustain = 0.5f,
-          release = 0.5f;
-    bool attackFromZero = false;
-    float velocity = 50.0f,
-          volume = 80.0f;
+    float attackSecs = 0.1f,
+          decaySecs = 0.5f,
+          sustainFctr = 0.5f,
+          releaseSecs = 0.5f;
+    bool doAttackFromZero = false;
+    float velSensPct = 50.0f,
+          volPct = 80.0f;
   } amp;
 
   struct {
-    float rate = 1.0f;
-    int shape = 0;
-    bool keytrig = false;
-    float amplitude = 0.0f,
-          cutoffFreq = 0.0f,
-          voiceFreq = 0.0f,
-          shape1 = 0.0f,
-          shape2 = 0.0f;
+    float hz = 1.0f;
+    int waveformId = 0;
+    bool doKeytrig = false;
+    float volPct = 100.0f,
+          cutoffHz = 0.0f,
+          voiceFreqPct = 0.0f,
+          shape1Pct = 0.0f,
+          shape2Pct = 0.0f;
   } lfo1, lfo2;
 
   struct {
-    float attack = 0.1f,
-          decay = 0.5f,
-          sustain = 0.5f,
-          release = 0.5f;
-    float osc2Volume = 0.0f,
-          voiceFreq = 0.0f,
-          shape1 = 0.0f,
-          shape2 = 0.0f;
+    float attackSecs = 0.1f,
+          decaySecs = 0.5f,
+          sustainFctr = 0.5f,
+          releaseSecs = 0.5f;
+    float osc2VolPct = 0.0f,
+          voiceFreqPct = 0.0f,
+          shape1Pct = 0.0f,
+          shape2Pct = 0.0f;
   } modEnv;
 
   struct {
-    float shape1 = 0.0f,
-          shape2 = 0.0f,
-          cutoff = 0.0f,
-          resonance = 0.0f;
+    float shape1Pct = 0.0f,
+          shape2Pct = 0.0f,
+          cutoffHz = 0.0f,
+          resonancePct = 0.0f;
   } vel;
 
   struct {
     int voiceCount = 8;
-    float glide = 0.0f;
-    float tuning = 440;
+    float glideSecs = 0.0f;
+    float tuningA4Hz = 440;
   } global;
 };

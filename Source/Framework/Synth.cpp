@@ -14,7 +14,7 @@ void Synth::allocateResources(double sampleRateNew, int /*samplesPerBlock*/) {
     voices[v].setSampleRate(sampleRate);
     voices[v].reset();
     voices[v].importParams(p);
-    voices[v].updateParams();
+    voices[v].updateStaticParams();
     voices[v].randomizeLfoPhase(v);
   }
 
@@ -35,7 +35,7 @@ void Synth::updateVoicesParams() {
   }
   for (int v = 0; v < polyphony; ++v) {
     voices[v].importParams(p);
-    voices[v].updateParams();
+    voices[v].updateStaticParams();
   }
 };
 
@@ -53,7 +53,7 @@ void Synth::render(float** outputBuffers, int sampleCount) {
         voices[v].advanceModEnvs();
         // Do only in active voices
         if (voices[v].isActive()) {
-          voices[v].updateSlowMods();  // update envs and mod amounts
+          voices[v].updateControlRate();  // update envs and mod amounts
         }
       }
     }
