@@ -178,9 +178,9 @@ void Voice::updateControlRate() {
   float cutoffKeytracked = f * std::exp2(k * note / 12.0f) * trackingCallibration;
 
   float cutoffModSum = (p.filter.envAmountHz * envFilterOut +
-                        std::pow(p.lfo1.cutoffPct, 2.0f) * lfo1Out +
-                        std::pow(p.lfo2.cutoffPct, 2.0f) * lfo2Out +
-                        p.vel.cutoffPct * velocityNorm * 200.0f);
+                        p.lfo1.cutoffHz * lfo1Out +
+                        p.lfo2.cutoffHz * lfo2Out +
+                        p.vel.cutoffHz * velocityNorm);
 
   filter.cutoffFreq = std::clamp(cutoffKeytracked + cutoffModSum, 20.0f, 20000.0f);
 

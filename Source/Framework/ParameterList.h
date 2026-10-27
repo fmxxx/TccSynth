@@ -51,7 +51,7 @@
   /* -------------------- LFO 1 -------------------- */                                                    \
   X(lfo1Rate, "LFO 1 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.hz)                               \
   X(lfo1Amplitude, "LFO 1 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo1.volPct)               \
-  X(lfo1CutoffFreq, "LFO 1 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.cutoffPct)           \
+  X(lfo1CutoffFreq, "LFO 1 Cutoff Freq", 0.0f, 20000.0f, 0.1f, 0.0f, 200.0f, "Hz", lfo1.cutoffHz)          \
   X(lfo1VoiceFreq, "LFO 1 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.voiceFreqPct)          \
   X(lfo1Shape1, "LFO 1 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape1Pct)                   \
   X(lfo1Shape2, "LFO 1 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape2Pct)                   \
@@ -59,7 +59,7 @@
   /* -------------------- LFO 2 -------------------- */                                                    \
   X(lfo2Rate, "LFO 2 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.hz)                               \
   X(lfo2Amplitude, "LFO 2 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo2.volPct)               \
-  X(lfo2CutoffFreq, "LFO 2 Cutoff Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.cutoffPct)           \
+  X(lfo2CutoffFreq, "LFO 2 Cutoff Freq", 0.0f, 20000.0f, 0.1f, 0.0f, 200.0f, "Hz", lfo2.cutoffHz)          \
   X(lfo2VoiceFreq, "LFO 2 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.voiceFreqPct)          \
   X(lfo2Shape1, "LFO 2 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape1Pct)                   \
   X(lfo2Shape2, "LFO 2 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape2Pct)                   \
@@ -77,7 +77,7 @@
   /* -------------------- Velocity -------------------- */                                                 \
   X(velShape1, "Vel Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.shape1Pct)                       \
   X(velShape2, "Vel Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.shape2Pct)                       \
-  X(velCutoff, "Vel Cutoff", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.cutoffPct)                        \
+  X(velCutoff, "Vel Cutoff", -20000.0f, 20000.0f, 1.0f, 0.0f, 0.0f, "Hz", vel.cutoffHz)                    \
   X(velResonance, "Vel Resonance", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.resonancePct)               \
                                                                                                            \
   /* -------------------- Global -------------------- */                                                   \

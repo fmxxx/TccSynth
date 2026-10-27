@@ -37,7 +37,7 @@ struct SynthParams {
     int waveformId = 0;
     bool doKeytrig = false;
     float volPct = 100.0f,
-          cutoffPct = 0.0f,
+          cutoffHz = 0.0f,
           voiceFreqPct = 0.0f,
           shape1Pct = 0.0f,
           shape2Pct = 0.0f;
@@ -57,7 +57,7 @@ struct SynthParams {
   struct {
     float shape1Pct = 0.0f,
           shape2Pct = 0.0f,
-          cutoffPct = 0.0f,
+          cutoffHz = 0.0f,
           resonancePct = 0.0f;
   } vel;
 
