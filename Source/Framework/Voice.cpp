@@ -68,20 +68,19 @@ void Voice::importParams(const SynthParams& newParams) {
   p = newParams;
 }
 
-void Voice::updateParams() {
+void Voice::updateStaticParams() {
   // --- Oscillators ---
   osc1period = periodFromNote(note, p.osc1.semitone, p.osc1.cents);
-  osc1.shape = applyShapeDeadZone(p.osc1.shapeFctr);
+  // osc1.shape is modulated
   osc1.amplitude = p.osc1.volPct * 0.01f;
 
   osc2period = periodFromNote(note, p.osc2.semitone, p.osc2.cents);
-  osc2.shape = applyShapeDeadZone(p.osc2.shapeFctr);
-  osc2.amplitude = p.osc2.volPct * 0.01f;
+  // osc2.shape is modulated
+  // osc2.amplitude is modulated
 
   // --- Filter ---
-  filter.cutoffFreq = p.filter.cutoffHz;
-  filter.resonance = p.filter.resonancePct * 0.01f;
-  filter.updateParams();
+  // filter.cutoffFreq is modulated
+  // filter.resonance is modulated
 
   envFilter.attackMs = p.filter.attackSecs * 1000;
   envFilter.decayMs = p.filter.decaySecs * 1000;
@@ -144,8 +143,7 @@ void Voice::advanceModEnvs() {
   envModOut = envMod.nextSample();
 }
 
-void Voice::updateSlowMods() {
-  // TODO apply modulation to parameters
+void Voice::updateControlRate() {
   // --- Osc 1 --- //
   float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
                            p.lfo1.shape1Pct * lfo1Out +
@@ -153,7 +151,9 @@ void Voice::updateSlowMods() {
                            p.vel.shape1Pct * velocityNorm) *
                           0.01f;
 
-  osc1.shape = std::clamp(p.osc1.shapeFctr + osc1ShapeModSum, -1.0f, 1.0f);
+  osc1.shape = std::clamp(applyShapeDeadZone(p.osc1.shapeFctr) +
+                              osc1ShapeModSum,
+                          -1.0f, 1.0f);
 
   // --- Osc 2 --- //
   float osc2ShapeModSum = (p.modEnv.shape2Pct * envModOut +
@@ -161,9 +161,13 @@ void Voice::updateSlowMods() {
                            p.lfo2.shape2Pct * lfo2Out +
                            p.vel.shape2Pct * velocityNorm) *
                           0.01f;
-  float osc2VolModSum = (p.modEnv.osc2VolPct * 0.01f + envModOut) * 0.01f;
 
-  osc2.shape = std::clamp(p.osc2.shapeFctr + osc2ShapeModSum, -1.0f, 1.0f);
+  osc2.shape = std::clamp(applyShapeDeadZone(p.osc2.shapeFctr) +
+                              osc2ShapeModSum,
+                          -1.0f, 1.0f);
+
+  float osc2VolModSum = (p.modEnv.osc2VolPct * 0.01f * envModOut);
+
   osc2.amplitude = std::clamp(p.osc2.volPct * 0.01f + osc2VolModSum, 0.0f, 1.0f);
 
   // --- Filter --- //
@@ -177,14 +181,12 @@ void Voice::updateSlowMods() {
                         std::pow(p.lfo1.cutoffPct, 2.0f) * lfo1Out +
                         std::pow(p.lfo2.cutoffPct, 2.0f) * lfo2Out +
                         p.vel.cutoffPct * velocityNorm * 200.0f);
-  cutoffModSum += cutoffKeytracked;
 
-  filter.cutoffFreq = std::clamp(cutoffModSum, 20.0f, 20000.0f);
-  filter.updateParams();
+  filter.cutoffFreq = std::clamp(cutoffKeytracked + cutoffModSum, 20.0f, 20000.0f);
 
-  // --- Global --- //
+  filter.resonance = p.filter.resonancePct * 0.01f;
 
-  // Voice pitch
+  // --- Voice pitch --- //
   constexpr float LFO_OCT_PER_UNIT = 0.001667f;
   constexpr float ENV_OCT_PER_UNIT = 0.01f;
 
@@ -192,6 +194,9 @@ void Voice::updateSlowMods() {
       p.lfo1.voiceFreqPct * LFO_OCT_PER_UNIT * lfo1Out +
       p.lfo2.voiceFreqPct * LFO_OCT_PER_UNIT * lfo2Out +
       p.modEnv.voiceFreqPct * ENV_OCT_PER_UNIT * envModOut;
+
+  // --- Update modules ONLY AFTER ALL MODs ARE CALCULATED --- //
+  filter.updateParams();
 }
 
 void Voice::setSampleRate(float newSampleRate) {
@@ -236,7 +241,7 @@ void Voice::startNote(float newNote, float newVelocity) {
   envFilter.start();
   envMod.start();
 
-  updateSlowMods();
+  updateControlRate();
 }
 
 void Voice::release() {

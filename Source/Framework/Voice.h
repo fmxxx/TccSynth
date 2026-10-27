@@ -41,12 +41,12 @@ class Voice {
   void reset();
 
   void importParams(const SynthParams& newParams);
-  void updateParams();
+  void updateStaticParams();  // Update params with no modulation
 
   void randomizeLfoPhase(int seed);
   void advanceLfos();
   void advanceModEnvs();  // envMod and envFilter
-  void updateSlowMods();
+  void updateControlRate();
 
   void setSampleRate(float newSampleRate);
   void startNote(float note, float velocity);
