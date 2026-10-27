@@ -70,21 +70,11 @@ void Voice::importParams(const SynthParams& newParams) {
 
 void Voice::updateStaticParams() {
   // --- Oscillators ---
-  // Only recalulate period if semi or cents change
-  if (p.osc1.semitones != prevOsc1Semi || p.osc1.cents != prevOsc1Cent) {
-    osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
-  }
-  prevOsc1Semi = p.osc1.semitones;
-  prevOsc1Cent = p.osc1.cents;
+  osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
   // osc1.shape is modulated
   osc1.amplitude = p.osc1.volPct * 0.01f;
 
-  // Only recalulate period if semi or cents change
-  if (p.osc2.semitones != prevOsc2Semi || p.osc2.cents != prevOsc2Cent) {
-    osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
-  }
-  prevOsc2Semi = p.osc2.semitones;
-  prevOsc2Cent = p.osc2.cents;
+  osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
   // osc2.shape is modulated
   // osc2.amplitude is modulated
 
