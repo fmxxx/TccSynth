@@ -194,7 +194,9 @@ void Voice::updateControlRate() {
 
   filter.cutoffFreq = std::clamp(cutoffKeytracked + cutoffModSum, 20.0f, 20000.0f);
 
-  filter.resonance = p.filter.resonancePct * 0.01f;
+  float resonanceModSum = (p.vel.resonancePct * 0.01f * envModOut);
+
+  filter.resonance = std::clamp(p.filter.resonancePct * 0.01f + resonanceModSum, 0.0f, 1.0f);
 
   // --- Voice pitch --- //
   constexpr float LFO_OCT_PER_UNIT = 0.001667f;
