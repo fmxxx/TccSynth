@@ -13,8 +13,6 @@ class Oscillator {
   //   phaseInc = 1.0f / samplesPerCycle
   float phaseInc;
 
-  void applyModulations(float shapeMod, float volMod);  // Called by Voice
-
   void reset();
   void newNote();
 
