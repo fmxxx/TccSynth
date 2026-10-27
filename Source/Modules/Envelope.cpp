@@ -53,7 +53,8 @@ void Envelope::attack() {
 }
 
 void Envelope::release() {
-  if (currentStage == EnvelopeStage::OFF) {
+  if (currentStage == EnvelopeStage::OFF ||
+      currentStage == EnvelopeStage::RELEASE) {
     return;
   }
 
