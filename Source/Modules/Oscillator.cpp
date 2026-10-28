@@ -6,24 +6,11 @@
 
 #include <algorithm>
 
-Oscillator::Oscillator()
-    : shape(0.0f),
-      amplitude(1.0f),
-      phaseInc(0.0f),
-      phase(0.0f) {}
-
-// --- --- Lifecycle --- --- //
-
-void Oscillator::reset() {
-  phase = 0.0f;
+void Oscillator::setPhase(float newPhase) {
+  phase = newPhase;
 }
 
-void Oscillator::newNote() {
-  reset();
-}
-
-// --- --- DSP --- --- //
-
+// ------ DSP ------ //
 float Oscillator::poly_blep(float phase, float phaseInc) {
   if (phaseInc <= 0.0f) return 0.0f;
 
@@ -63,8 +50,6 @@ float Oscillator::triangleShape(float v1, float slant) {
   const float diff = b1 - b2;
   return 0.5f * (b1 + b2 - std::sqrt(diff * diff + r * r));
 }
-
-// --- --- Per-sample --- --- //
 
 float Oscillator::nextSample() {
   const float dt = phaseInc;
