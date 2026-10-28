@@ -98,3 +98,7 @@ bool Envelope::isActive() const {
 bool Envelope::isAttack() const {
   return (currentStage == EnvStage::ATTACK);
 }
+
+bool Envelope::isReleased() const {
+  return (currentStage == EnvStage::RELEASE || currentStage == EnvStage::OFF);
+}
