@@ -38,9 +38,9 @@ class Envelope {
   // ------ Getters ------ //
   float getCurrentLevel() const;
   float getCurrentStageAsFloat() const;
-  bool isActive() const;
-  bool isAttack() const;
-  bool isReleased() const;  // Either RELEASE or OFF = True
+  bool isActive() const;    // not OFF = True
+  bool isAttack() const;    // ATTACK = True
+  bool isReleased() const;  // RELEASE or OFF = True
 
  private:
   float sampleRate = 44100.0f;
