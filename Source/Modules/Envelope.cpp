@@ -32,6 +32,7 @@ float Envelope::nextSample() {
 
       if (level >= attackTarget) {
         currentStage = EnvStage::DECAY;
+        level = attackTarget;
         increment = calcInc(decayMs, sustain, level);  // Increment for the next stage
       } else {
         level += increment;
@@ -40,6 +41,7 @@ float Envelope::nextSample() {
     case EnvStage::DECAY:
       if (level <= sustain) {
         currentStage = EnvStage::SUSTAIN;
+        level = sustain;
       } else {
         level += increment;
         return applyVel(level);
@@ -52,22 +54,22 @@ float Envelope::nextSample() {
     case EnvStage::RELEASE:
       if (level <= releaseTarget) {
         currentStage = EnvStage::OFF;
+        level = releaseTarget;
       } else {
         level += increment;
         return applyVel(level);
       }
 
     case EnvStage::OFF:
-      level = 0.0f;
-      return 0.0f;
+      return level;
 
     default:
       break;
   }
 }
 
-float Envelope::calcInc(float timeMs, float currentLevel, float targetLevel) {
-  float delta = currentLevel - targetLevel;
+float Envelope::calcInc(float timeMs, float targetLevel, float currentLevel) {
+  float delta = targetLevel - currentLevel;
   if (timeMs <= 0.0f) {
     return delta;
   }

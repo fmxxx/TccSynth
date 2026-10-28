@@ -54,6 +54,6 @@ class Envelope {
   float applyVel(float level) const;
 
   // Converts a level delta and duration to a single-sample increment.
-  float calcInc(float ms, float currentLevel, float targetLevel);
+  float calcInc(float ms, float targetLevel, float currentLevel);
   void attack();
 };
