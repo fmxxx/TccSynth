@@ -1,5 +1,7 @@
 #include "Synth.h"
 
+#include <JuceHeader.h>
+
 #include <cmath>
 #include <cstddef>
 #include <cstring>
@@ -114,7 +116,7 @@ void Synth::noteOn(float note, float velocity) {
   if (polyphony > 1) {
     voice = findNewVoice(note);
   }
-
+  DBG("Note on: " << note << " voice=" << voice << " vel=" << velocity);
   voices[voice].startNote(note, velocity);
 }
 
@@ -122,8 +124,8 @@ void Synth::noteOff(float note) {
   for (int v = 0; v < polyphony; ++v) {
     if (voices[v].note == note) {
       // TODO: Check for sustain pedal?
+      DBG("Note off: " << note << " voice=" << v);
       voices[v].release();
-      voices[v].note = 0;
     }
   }
 }

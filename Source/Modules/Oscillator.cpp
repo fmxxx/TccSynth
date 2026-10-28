@@ -1,6 +1,7 @@
 
 #include "Oscillator.h"
 
+#include <JuceHeader.h>
 #include <math.h>
 
 #include <algorithm>
@@ -90,10 +91,10 @@ float Oscillator::nextSample() {
       add = 0.0f;
     } else {
       // Shift SawB further to narrow the high-duty pulse.
-      // offsetB: 0.5 (50% duty) .. 0.01 (1% high duty).
+      // offsetB: 0.5 (50% duty) .. 0.00 (0% high duty).
       mix = 1.0f;
-      offsetB = 0.5f - (shape - 0.5f) * 0.98f;
-      add = 2.0f * offsetB - 1.0f;  // DC offset to keep output centered
+      offsetB = 0.5f - (shape - 0.5f) * 0.97f;  // Makes it not quite close
+      add = 2.0f * offsetB - 1.0f;              // DC offset to keep output centered
     }
 
     float phaseB = phase + offsetB;
