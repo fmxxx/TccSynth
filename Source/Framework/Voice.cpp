@@ -45,8 +45,6 @@ void Voice::reset() {
   osc1period = 0.0f;
   osc2period = 0.0f;
   pitchModOctaves = 0.0f;
-  osc1.reset();
-  osc2.reset();
 
   filter.reset();
 
@@ -57,9 +55,6 @@ void Voice::reset() {
   envAmpOut = 0.0f;
   envFilterOut = 0.0f;
   envModOut = 0.0f;
-
-  lfo1.reset();  // Does nothing atm
-  lfo2.reset();  // Does nothing atm
 
   lfo1Out = 0.0f;
   lfo2Out = 0.0f;
@@ -227,8 +222,8 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
 
-  osc1.newNote();
-  osc2.newNote();
+  osc1.setPhase(0.0f);
+  osc2.setPhase(0.0f);
 
   // Prevent retrigger without release from retriggering LFOs
   if (lfo1.keytrig && envAmp.isReleased()) {
