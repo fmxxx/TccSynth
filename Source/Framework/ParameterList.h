@@ -23,11 +23,11 @@
   /* ------Oscillators ------- */                                                                          \
   X(osc1Semitone, "Osc 1 Semitone", -48.0f, 48.0f, 1.0f, 0.0f, 0.0f, "semi", osc1.semitones)               \
   X(osc1Cents, "Osc 1 Cents", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "cent", osc1.cents)                       \
-  X(osc1Shape, "Osc 1 Shape", -1.0f, 1.0f, 0.001f, 0.0f, 0.0f, "", osc1.shapeFctr)                         \
+  X(osc1Shape, "Osc 1 Shape", -1.0f, 1.0f, 0.0001f, 0.0f, 0.0f, "", osc1.shapeFctr)                        \
   X(osc1Volume, "Osc 1 Volume", 0.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", osc1.volPct)                        \
   X(osc2Semitone, "Osc 2 Semitone", -48.0f, 48.0f, 1.0f, 0.0f, 0.0f, "semi", osc2.semitones)               \
   X(osc2Cents, "Osc 2 Cents", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "cent", osc2.cents)                       \
-  X(osc2Shape, "Osc 2 Shape", -1.0f, 1.0f, 0.001f, 0.0f, 0.0f, "", osc2.shapeFctr)                         \
+  X(osc2Shape, "Osc 2 Shape", -1.0f, 1.0f, 0.0001f, 0.0f, 0.0f, "", osc2.shapeFctr)                        \
   X(osc2Volume, "Osc 2 Volume", 0.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", osc2.volPct)                        \
                                                                                                            \
   /* -------------------- Filter -------------------- */                                                   \
