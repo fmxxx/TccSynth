@@ -230,13 +230,11 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc1.newNote();
   osc2.newNote();
 
-  if (lfo1.keytrig) {
-    lfo1Out = 0.0f;
+  // Prevent retrigger without release from retriggering LFOs
+  if (lfo1.keytrig && envAmp.isReleased()) {
     lfo1.setPhase(0.0f);
   }
-
-  if (lfo2.keytrig) {
-    lfo2Out = 0.0f;
+  if (lfo2.keytrig && envAmp.isReleased()) {
     lfo2.setPhase(0.0f);
   }
 
