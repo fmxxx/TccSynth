@@ -54,6 +54,7 @@ void Voice::reset() {
   envFilter.reset();
   envMod.reset();
 
+  envAmpOut = 0.0f;
   envFilterOut = 0.0f;
   envModOut = 0.0f;
 
@@ -265,9 +266,11 @@ float Voice::render() {
 
   float filterOut = filter.nextSample(oscMix);
 
-  float envOut = amp.nextSample(filterOut, envAmp.nextSample());
+  envAmpOut = envAmp.nextSample();
 
-  return envOut;
+  float ampOut = amp.nextSample(filterOut, envAmpOut);
+
+  return ampOut;
 }
 
 bool Voice::isActive() const {

@@ -22,6 +22,8 @@ class Voice {
   float lfo1Out = 0.0f;
   float lfo2Out = 0.0f;
 
+  float envAmpOut = 0.0f;
+
   SynthParams p;
 
   Oscillator osc1;
