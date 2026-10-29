@@ -95,7 +95,9 @@
 #define PARAM_BOOL_LIST                                                     \
   X(ampAttackFromZero, "Amp Attack From Zero", false, amp.doAttackFromZero) \
   X(lfo1Keytrig, "LFO 1 Keytrig", false, lfo1.doKeytrig)                    \
-  X(lfo2Keytrig, "LFO 2 Keytrig", false, lfo2.doKeytrig)
+  X(lfo2Keytrig, "LFO 2 Keytrig", false, lfo2.doKeytrig)                    \
+  X(osc1Keytrig, "OSC 1 Keytrig", true, osc1.doKeytrig)                     \
+  X(osc2Keytrig, "OSC 2 Keytrig", true, osc2.doKeytrig)
 
 // Int parameters: min/max integer, step is implied as 1.
 // Columns: id, display, min, max, default, dest

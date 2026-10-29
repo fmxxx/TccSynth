@@ -9,6 +9,7 @@ struct SynthParams {
           cents = 0.0f,
           shapeFctr = 0.0f,
           volPct = 100.0f;
+    bool doKeytrig = true;
   } osc1, osc2;
 
   struct {

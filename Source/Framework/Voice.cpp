@@ -235,8 +235,8 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
 
-  osc1.setPhase(0.0f);
-  osc2.setPhase(0.0f);
+  if (p.osc1.doKeytrig) osc1.setPhase(0.0f);
+  if (p.osc2.doKeytrig) osc2.setPhase(0.0f);
 
   // Prevent retrigger without release from retriggering LFOs
   if (lfo1.keytrig && envAmp.isReleased()) {
