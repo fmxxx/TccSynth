@@ -129,6 +129,8 @@ void Voice::randomizeLfoPhase(int seed) {
   lfo2.setPhase(randomHash(seed + 128));
 }
 
+// ------ Control Rate ------ //
+
 void Voice::advanceLfos() {
   lfo1Out = lfo1.nextSample();
   lfo2Out = lfo2.nextSample();
@@ -139,7 +141,7 @@ void Voice::advanceModEnvs() {
   envModOut = envMod.nextSample();
 }
 
-void Voice::updateControlRate() {
+void Voice::applyModulations() {
   // --- Osc 1 --- //
   float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
                            p.lfo1.shape1Pct * lfo1Out +
@@ -197,6 +199,17 @@ void Voice::updateControlRate() {
   filter.updateParams();
 }
 
+void Voice::tickControlRate() {
+  // DO even in inactive voices
+  advanceLfos();
+  advanceModEnvs();
+
+  if (isActive()) {
+    applyModulations();
+  }
+}
+
+// ------ ------ ------ ///
 void Voice::setSampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
 
@@ -237,7 +250,7 @@ void Voice::startNote(float newNote, float newVelocity) {
   envFilter.start();
   envMod.start();
 
-  updateControlRate();
+  applyModulations();
 }
 
 void Voice::release() {
@@ -266,6 +279,7 @@ float Voice::render() {
   return ampOut;
 }
 
+// ------ Helpers ------ //
 bool Voice::isActive() const {
   return envAmp.isActive();
 }

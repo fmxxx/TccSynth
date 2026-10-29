@@ -47,16 +47,11 @@ void Synth::render(float** outputBuffers, int sampleCount) {
 
   // --- Update modulators every CONTROL_RATE_SAMPLES samples ---
   for (int i = 0; i < sampleCount; ++i) {
+    // -- Control Rate stuff
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
       for (int v = 0; v < polyphony; ++v) {
-        // Do even in inactive voices
-        voices[v].advanceLfos();
-        voices[v].advanceModEnvs();
-        // Do only in active voices
-        if (voices[v].isActive()) {
-          voices[v].updateControlRate();  // update envs and mod amounts
-        }
+        voices[v].tickControlRate();
       }
     }
 
