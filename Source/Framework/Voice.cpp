@@ -45,8 +45,6 @@ void Voice::reset() {
   osc1period = 0.0f;
   osc2period = 0.0f;
   pitchModOctaves = 0.0f;
-  osc1.reset();
-  osc2.reset();
 
   filter.reset();
 
@@ -54,11 +52,9 @@ void Voice::reset() {
   envFilter.reset();
   envMod.reset();
 
+  envAmpOut = 0.0f;
   envFilterOut = 0.0f;
   envModOut = 0.0f;
-
-  lfo1.reset();  // Does nothing atm
-  lfo2.reset();  // Does nothing atm
 
   lfo1Out = 0.0f;
   lfo2Out = 0.0f;
@@ -133,6 +129,8 @@ void Voice::randomizeLfoPhase(int seed) {
   lfo2.setPhase(randomHash(seed + 128));
 }
 
+// ------ Control Rate ------ //
+
 void Voice::advanceLfos() {
   lfo1Out = lfo1.nextSample();
   lfo2Out = lfo2.nextSample();
@@ -143,7 +141,7 @@ void Voice::advanceModEnvs() {
   envModOut = envMod.nextSample();
 }
 
-void Voice::updateControlRate() {
+void Voice::applyModulations() {
   // --- Osc 1 --- //
   float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
                            p.lfo1.shape1Pct * lfo1Out +
@@ -201,6 +199,17 @@ void Voice::updateControlRate() {
   filter.updateParams();
 }
 
+void Voice::tickControlRate() {
+  // DO even in inactive voices
+  advanceLfos();
+  advanceModEnvs();
+
+  if (isActive()) {
+    applyModulations();
+  }
+}
+
+// ------ ------ ------ ///
 void Voice::setSampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
 
@@ -226,24 +235,20 @@ void Voice::startNote(float newNote, float newVelocity) {
   osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
   osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
 
-  osc1.newNote();
-  osc2.newNote();
-
-  if (lfo1.keytrig) {
-    lfo1Out = 0.0f;
-    lfo1.setPhase(0.0f);
-  }
-
-  if (lfo2.keytrig) {
-    lfo2Out = 0.0f;
-    lfo2.setPhase(0.0f);
+  // Prevent retrigger without release from retriggering
+  // Might happen if it receives two MIDI note ons witohut a note off in between
+  if (envAmp.isReleased()) {
+    if (p.osc1.doKeytrig) osc1.setPhase(0.0f);
+    if (p.osc2.doKeytrig) osc2.setPhase(0.0f);
+    if (lfo1.keytrig) lfo1.setPhase(0.0f);
+    if (lfo2.keytrig) lfo2.setPhase(0.0f);
   }
 
   envAmp.start();
   envFilter.start();
   envMod.start();
 
-  updateControlRate();
+  applyModulations();
 }
 
 void Voice::release() {
@@ -265,11 +270,14 @@ float Voice::render() {
 
   float filterOut = filter.nextSample(oscMix);
 
-  float envOut = amp.nextSample(filterOut, envAmp.nextSample());
+  envAmpOut = envAmp.nextSample();
 
-  return envOut;
+  float ampOut = amp.nextSample(filterOut, envAmpOut);
+
+  return ampOut;
 }
 
+// ------ Helpers ------ //
 bool Voice::isActive() const {
   return envAmp.isActive();
 }

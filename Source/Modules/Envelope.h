@@ -4,9 +4,8 @@
 #include <algorithm>
 #include <cmath>
 
-enum class EnvelopeStage {
+enum class EnvStage {
   OFF,
-  DECLICK,
   ATTACK,
   DECAY,
   SUSTAIN,
@@ -25,43 +24,37 @@ class Envelope {
 
   float velocityNorm = 0.0f;  // [0,1]
 
-  // ------ Modulations ------ //
-  float attackMsMod = 0.0f;
-  float decayMsMod = 0.0f;
-  float sustainMod = 0.0f;  //[0, 1]
-  float releaseMsMod = 0.0f;
-
   void reset();
   void updateParams();
-  void setSampleRate(float newSampleRate);
 
   void start();
   void release();
 
   float nextSample();
 
+  // ------ Setters ------ //
+  void setSampleRate(float newSampleRate);
+
   // ------ Getters ------ //
   float getCurrentLevel() const;
-  EnvelopeStage getStage() const;
-  bool isActive() const;
-  bool isAttack() const;
+  float getCurrentStageAsFloat() const;
+  bool isActive() const;    // not OFF = True
+  bool isAttack() const;    // ATTACK = True
+  bool isReleased() const;  // RELEASE or OFF = True
 
  private:
   float sampleRate = 44100.0f;
+
   float level = 0.0f;
+  float increment = 0.0f;
+  EnvStage currentStage = EnvStage::OFF;
 
-  EnvelopeStage currentStage = EnvelopeStage::OFF;
-
-  float declickMs = 5.0f;
-
-  float targetLevel = 0.0f;
-  float stageIncrement = 0.0f;
-
-  float attackTarget = 1.0f;
+  const float attackTarget = 1.0f;
+  const float releaseTarget = 0.0f;
 
   float applyVel(float level) const;
 
   // Converts a level delta and duration to a single-sample increment.
-  float calcCoef(float ms, float target);
+  float calcInc(float ms, float targetLevel, float currentLevel);
   void attack();
 };

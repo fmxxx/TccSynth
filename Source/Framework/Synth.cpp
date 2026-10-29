@@ -47,16 +47,11 @@ void Synth::render(float** outputBuffers, int sampleCount) {
 
   // --- Update modulators every CONTROL_RATE_SAMPLES samples ---
   for (int i = 0; i < sampleCount; ++i) {
+    // -- Control Rate stuff
     if (--controlCounter <= 0) {
       controlCounter = CONTROL_RATE_SAMPLES;
       for (int v = 0; v < polyphony; ++v) {
-        // Do even in inactive voices
-        voices[v].advanceLfos();
-        voices[v].advanceModEnvs();
-        // Do only in active voices
-        if (voices[v].isActive()) {
-          voices[v].updateControlRate();  // update envs and mod amounts
-        }
+        voices[v].tickControlRate();
       }
     }
 
@@ -116,7 +111,7 @@ void Synth::noteOn(float note, float velocity) {
   if (polyphony > 1) {
     voice = findNewVoice(note);
   }
-  DBG("Note on: " << note << " voice=" << voice << " vel=" << velocity);
+  DBG("Note on:  " << note << " voice: " << voice << " vel: " << velocity);
   voices[voice].startNote(note, velocity);
 }
 
@@ -124,7 +119,7 @@ void Synth::noteOff(float note) {
   for (int v = 0; v < polyphony; ++v) {
     if (voices[v].note == note) {
       // TODO: Check for sustain pedal?
-      DBG("Note off: " << note << " voice=" << v);
+      DBG("Note off: " << note << " voice: " << v);
       voices[v].release();
     }
   }
@@ -160,7 +155,7 @@ int Synth::findNewVoice(float note) const {
 
   for (int i = 0; i < polyphony; ++i) {
     if (!voices[i].envAmp.isAttack()) {
-      const float level = voices[i].envAmp.getCurrentLevel();
+      const float level = voices[i].envAmpOut;
       if (level < l) {
         l = level;
         v = i;

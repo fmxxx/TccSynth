@@ -22,6 +22,8 @@ class Voice {
   float lfo1Out = 0.0f;
   float lfo2Out = 0.0f;
 
+  float envAmpOut = 0.0f;
+
   SynthParams p;
 
   Oscillator osc1;
@@ -44,9 +46,6 @@ class Voice {
   void updateStaticParams();  // Update params with no modulation
 
   void randomizeLfoPhase(int seed);
-  void advanceLfos();
-  void advanceModEnvs();  // envMod and envFilter
-  void updateControlRate();
 
   void setSampleRate(float newSampleRate);
   void startNote(float note, float velocity);
@@ -54,6 +53,10 @@ class Voice {
 
   bool isActive() const;
 
+  // ------ Control Rate ------ //
+  void tickControlRate();
+
+  // ------ Every Sample ------ //
   float render();
 
  private:
@@ -64,6 +67,11 @@ class Voice {
   float pitchModOctaves = 0.0f;
 
   float trackingCallibration = 0.0;  // Used to make keytrack fit note to hz curve when filter cutoff is at its min value
+
+  // ------ Control Rate ------ //
+  void advanceLfos();
+  void advanceModEnvs();  // envMod and envFilter
+  void applyModulations();
 
   float periodFromNote(float note, float semitone, float cents) const;
 };
