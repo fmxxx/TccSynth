@@ -2,8 +2,6 @@
 
 class Oscillator {
  public:
-  Oscillator();
-
   // ------ Exposed Parameters ------ //
   float shape = 0.0f;      // -1: tri; 0: saw; 0.5: square; 1: narrow pulse
   float amplitude = 1.0f;  // [0, 1]
@@ -16,8 +14,6 @@ class Oscillator {
   void setPhase(float newPhase);
 
   // ------ DSP ------ //
-  float saw(float p, float dt);
-  float triangleShape(float v1, float slant);
   float poly_blep(float phase, float phaseInc);
   float nextSample();
 
