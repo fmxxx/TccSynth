@@ -9,16 +9,16 @@
 #include "../Utils.h"
 
 namespace {
-// Remaps the raw shape parameter so a perfect saw exists in a small window
-// around zero, and the morph ramps in smoothly outside it.
-//
-//   |shape| <= 0.05       -> 0 (perfect saw)
-//   0.05 < |shape| < 0.25 -> cubic Hermite ramp
-//   |shape| >= 0.25       -> input unchanged
-//
-// Cubic Hermite matches value and slope at both endpoints, so there is no
-// audible kick-in at ±0.05 or at ±0.25.
 inline float applyShapeDeadZone(float s) {
+  // Remaps the raw shape parameter so a perfect saw exists in a small window
+  // around zero, and the morph ramps in smoothly outside it.
+  //
+  //   |shape| <= 0.05       -> 0 (perfect saw)
+  //   0.05 < |shape| < 0.25 -> cubic Hermite ramp
+  //   |shape| >= 0.25       -> input unchanged
+  //
+  // Cubic Hermite matches value and slope at both endpoints, so there is no
+  // audible kick-in at ±0.05 or at ±0.25.
   constexpr float deadZone = 0.05f;
   constexpr float rampEnd = 0.25f;
   constexpr float rampWidth = rampEnd - deadZone;
@@ -60,6 +60,7 @@ void Voice::reset() {
   lfo2Out = 0.0f;
 }
 
+// ------ Parameter Stuff ------ //
 void Voice::importParams(const SynthParams& newParams) {
   p = newParams;
 }
@@ -123,10 +124,28 @@ void Voice::updateStaticParams() {
   trackingCallibration = p.global.tuningA4Hz / (20.0f * std::exp2(69.0f / 12.0f));
 }
 
+// ------ ------ ------ //
 void Voice::randomizeLfoPhase(int seed) {
   lfo1.setPhase(randomHash(seed));
   // Offset so no two voices have same seed
   lfo2.setPhase(randomHash(seed + 128));
+}
+
+void Voice::setSampleRate(float newSampleRate) {
+  sampleRate = newSampleRate;
+
+  filter.setSampleRate(newSampleRate);
+
+  lfo1.setSampleRate(newSampleRate);
+  lfo2.setSampleRate(newSampleRate);
+
+  envAmp.setSampleRate(newSampleRate);
+
+  // Make modulation envelopes have a slower sample rate (updated every
+  // CONTROL_RATE_SAMPLES instead of every sample)
+  const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
+  envFilter.setSampleRate(controlRate);
+  envMod.setSampleRate(controlRate);
 }
 
 // ------ Control Rate ------ //
@@ -209,24 +228,7 @@ void Voice::tickControlRate() {
   }
 }
 
-// ------ ------ ------ ///
-void Voice::setSampleRate(float newSampleRate) {
-  sampleRate = newSampleRate;
-
-  filter.setsampleRate(newSampleRate);
-
-  lfo1.setSampleRate(newSampleRate);
-  lfo2.setSampleRate(newSampleRate);
-
-  envAmp.setSampleRate(newSampleRate);
-
-  // Make modulation envelopes have a slower sample rate (updated every
-  // CONTROL_RATE_SAMPLES instead of every sample)
-  const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
-  envFilter.setSampleRate(controlRate);
-  envMod.setSampleRate(controlRate);
-}
-
+// ------ Note lifecycle ------ //
 void Voice::startNote(float newNote, float newVelocity) {
   note = newNote;
   velocityNorm = newVelocity / 127.0f;
@@ -257,6 +259,7 @@ void Voice::release() {
   envMod.release();
 }
 
+// ------ Every Sample ------ //
 float Voice::render() {
   // If pitchRatio = 1, then frequency doesnt change from midi note's
   const float pitchRatio = std::exp2(pitchModOctaves);
@@ -277,11 +280,16 @@ float Voice::render() {
   return ampOut;
 }
 
-// ------ Helpers ------ //
+// ------ Envelope getters ------ //
+bool Voice::isAttack() const {
+  return envAmp.isAttack();
+}
+
 bool Voice::isActive() const {
   return envAmp.isActive();
 }
 
+// ------ Helpers ------ //
 float Voice::periodFromNote(float note, float semitones, float cents) const {
   const float semitonesFromA4 = (note - 69.0f) + semitones + (cents / 100.0f);
   const float noteFrequencyHz = p.global.tuningA4Hz * std::exp2(semitonesFromA4 / 12.0f);
