@@ -7,9 +7,10 @@ void Envelope::reset() {
 }
 
 void Envelope::updateParams() {
-  // Blank for now, until we add feature to udpate coefs in real time
+  // TODO: add coeficient recalculation on parameter change
 }
 
+// ------ Lifecycle ------ //
 void Envelope::start() {
   if (attackFromZero) {
     level = 0.0f;
@@ -26,6 +27,7 @@ void Envelope::release() {
   increment = calcInc(releaseMs, releaseTarget, level);  // Increment for the next stage
 }
 
+// ------ Per sample ------ //
 float Envelope::nextSample() {
   switch (currentStage) {
     case EnvStage::ATTACK:
@@ -68,19 +70,6 @@ float Envelope::nextSample() {
   }
 }
 
-float Envelope::calcInc(float timeMs, float targetLevel, float currentLevel) {
-  float delta = targetLevel - currentLevel;
-  if (timeMs <= 0.0f) {
-    return delta;
-  }
-  return delta / (0.001f * timeMs * sampleRate);
-}
-
-float Envelope::applyVel(float level) const {
-  float levelScaled = level * (velocityNorm * velocitySens + (1 - velocitySens));
-  return std::clamp(levelScaled, 0.0f, 1.0f);
-}
-
 // ------ Setters ------ //
 void Envelope::setSampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
@@ -101,4 +90,18 @@ bool Envelope::isAttack() const {
 
 bool Envelope::isReleased() const {
   return (currentStage == EnvStage::RELEASE || currentStage == EnvStage::OFF);
+}
+
+// ------ Helpers ------ //
+float Envelope::applyVel(float level) const {
+  float levelScaled = level * (velocityNorm * velocitySens + (1 - velocitySens));
+  return std::clamp(levelScaled, 0.0f, 1.0f);
+}
+
+float Envelope::calcInc(float timeMs, float targetLevel, float currentLevel) {
+  float delta = targetLevel - currentLevel;
+  if (timeMs <= 0.0f) {
+    return delta;
+  }
+  return delta / (0.001f * timeMs * sampleRate);
 }

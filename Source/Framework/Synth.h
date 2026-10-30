@@ -19,7 +19,11 @@ class Synth {
 
   void reset();
   void updateVoicesParams();
+
+  // ------ Per sample ------ //
   void render(float** outputBuffers, int sampleCount);
+
+  // ------ MIDI ------ //
   void receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2);
 
   SynthParams p;
@@ -30,12 +34,13 @@ class Synth {
 
   int controlCounter = 1;  // Keeps track of when the LFO should update
 
+  // ------ MIDI ------ //
   void controlChange(uint8_t data1, uint8_t data2);
   void noteOn(float note, float velocity);
   void noteOff(float note);
 
+  // ------ Polyphony Stuff ------ //
   int findNewVoice(float note) const;
-
   // Reset unused voices when polyphony changes and update its params
   void setPolyphony(int newVoiceCount);
 };

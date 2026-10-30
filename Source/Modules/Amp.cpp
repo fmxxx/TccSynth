@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+// ------ Per sample ------ //
 float Amp::nextSample(float input, float envLevel) {
   // --- Apply amp envelope --- //
   output = input * envLevel;

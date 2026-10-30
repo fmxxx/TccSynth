@@ -9,12 +9,13 @@ class Lfo {
   int shape = 1;
   float amplitude = 1.0f;  // [0,1]
 
-  void reset();
-  void setPhase(float newPhase);
-
   void updateParams();
+
+  // ------ Setters ------ //
+  void setPhase(float newPhase);
   void setSampleRate(float newSampleRate);
 
+  // ------ Per sample ------ //
   float nextSample();
 
  private:

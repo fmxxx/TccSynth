@@ -25,11 +25,13 @@ class Envelope {
   float velocityNorm = 0.0f;  // [0,1]
 
   void reset();
-  void updateParams();
+  void updateParams();  // TODO: add coeficient recalculation on parameter change
 
+  // ------ Lifecycle ------ //
   void start();
   void release();
 
+  // ------ Per sample ------ //
   float nextSample();
 
   // ------ Setters ------ //
@@ -37,7 +39,6 @@ class Envelope {
 
   // ------ Getters ------ //
   float getCurrentLevel() const;
-  float getCurrentStageAsFloat() const;
   bool isActive() const;    // not OFF = True
   bool isAttack() const;    // ATTACK = True
   bool isReleased() const;  // RELEASE or OFF = True
@@ -52,9 +53,8 @@ class Envelope {
   const float attackTarget = 1.0f;
   const float releaseTarget = 0.0f;
 
+  // ------ Helpers ------ //
   float applyVel(float level) const;
-
   // Converts a level delta and duration to a single-sample increment.
   float calcInc(float ms, float targetLevel, float currentLevel);
-  void attack();
 };
