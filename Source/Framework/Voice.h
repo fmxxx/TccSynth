@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include <juce_audio_basics/juce_audio_basics.h>
+
 #include "../Modules/Amp.h"
 #include "../Modules/Envelope.h"
 #include "../Modules/Filter.h"
@@ -53,6 +55,18 @@ class Voice {
   float pitchModOctaves = 0.0f;
 
   float trackingCallibration = 0.0;  // Used to make keytrack fit note to hz curve when filter cutoff is at its min value
+
+// ------ Smoothed parameters ------ //
+  juce::SmoothedValue<float> ampVolSmoother;          // p.amp.volPct → [0, 1]
+  juce::SmoothedValue<float> osc1VolSmoother;         // p.osc1.volPct → [0, 1]
+  juce::SmoothedValue<float> osc2VolSmoother;         // p.osc2.volPct → [0, 1]
+  juce::SmoothedValue<float> osc1ShapeSmoother;       // applyShapeDeadZone(p.osc1.shapeFctr)
+  juce::SmoothedValue<float> osc2ShapeSmoother;       // applyShapeDeadZone(p.osc2.shapeFctr)
+  juce::SmoothedValue<float> filterCutoffSmoother;    // p.filter.cutoffHz
+  juce::SmoothedValue<float> filterResSmoother;       // p.filter.resonancePct * 0.01f
+  // LFO amplitudes — consumed at CONTROL rate, reset() with control rate
+  juce::SmoothedValue<float> lfo1VolSmoother;
+  juce::SmoothedValue<float> lfo2VolSmoother;
 
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;

@@ -68,16 +68,18 @@ void Voice::importParams(const SynthParams& newParams) {
 void Voice::updateStaticParams() {
   // --- Oscillators ---
   osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
-  // osc1.shape is modulated
-  osc1.amplitude = p.osc1.volPct * 0.01f;
+  osc1ShapeSmoother.setTargetValue(applyShapeDeadZone(p.osc1.shapeFctr));
+  osc1VolSmoother.setTargetValue(p.osc1.volPct * 0.01f);
+  // osc1.shape modulated in updateControlRate
 
   osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
-  // osc2.shape is modulated
-  // osc2.amplitude is modulated
+  osc2ShapeSmoother.setTargetValue(applyShapeDeadZone(p.osc2.shapeFctr));
+  osc2VolSmoother.setTargetValue(p.osc2.volPct * 0.01f);
+  // osc2.shape modulated in updateControlRate
 
   // --- Filter ---
-  // filter.cutoffFreq is modulated
-  // filter.resonance is modulated
+  filterCutoffSmoother.setTargetValue(p.filter.cutoffHz);
+  filterResSmoother.setTargetValue(p.filter.resonancePct * 0.01f);
 
   envFilter.attackMs = p.filter.attackSecs * 1000;
   envFilter.decayMs = p.filter.decaySecs * 1000;
@@ -86,7 +88,7 @@ void Voice::updateStaticParams() {
   envFilter.updateParams();
 
   // --- Amp ---
-  amp.volume = p.amp.volPct * 0.01f;
+  ampVolSmoother.setTargetValue(p.amp.volPct * 0.01f);
   envAmp.velocitySens = p.amp.velSensPct * 0.01f;
   envAmp.attackFromZero = p.amp.doAttackFromZero;
 
@@ -103,18 +105,17 @@ void Voice::updateStaticParams() {
   envMod.releaseMs = p.modEnv.releaseSecs * 1000;
   envMod.updateParams();
 
-  // --- LFO 1 ---
+  // --- LFOs ---
   lfo1.freq = p.lfo1.hz;
   lfo1.shape = p.lfo1.waveformId;
   lfo1.keytrig = p.lfo1.doKeytrig;
-  lfo1.amplitude = p.lfo1.volPct * 0.01f;
+  lfo1VolSmoother.setTargetValue(p.lfo1.volPct * 0.01f);
   lfo1.updateParams();
 
-  // --- LFO 2 ---
   lfo2.freq = p.lfo2.hz;
   lfo2.shape = p.lfo2.waveformId;
   lfo2.keytrig = p.lfo2.doKeytrig;
-  lfo2.amplitude = p.lfo2.volPct * 0.01f;
+  lfo2VolSmoother.setTargetValue(p.lfo2.volPct * 0.01f);
   lfo2.updateParams();
 
   // --- Global ---
@@ -134,16 +135,32 @@ void Voice::randomizeLfoPhase(int seed) {
 void Voice::setSampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
 
-  filter.setSampleRate(newSampleRate);
+  // Control-rate smoothers — consumed in updateControlRate / advanceLfos
+  const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
+  ampVolSmoother      .reset(controlRate, 0.010f);
+  osc1VolSmoother     .reset(controlRate, 0.010f);
+  osc2VolSmoother     .reset(controlRate, 0.010f);
+  osc1ShapeSmoother   .reset(controlRate, 0.010f);
+  osc2ShapeSmoother   .reset(controlRate, 0.010f);
+  filterCutoffSmoother.reset(controlRate, 0.020f);
+  filterResSmoother   .reset(controlRate, 0.010f);
+  lfo1VolSmoother     .reset(controlRate, 0.010f);
+  lfo2VolSmoother     .reset(controlRate, 0.010f);
 
+  ampVolSmoother      .setCurrentAndTargetValue(p.amp.volPct * 0.01f);
+  osc1VolSmoother     .setCurrentAndTargetValue(p.osc1.volPct * 0.01f);
+  osc2VolSmoother     .setCurrentAndTargetValue(p.osc2.volPct * 0.01f);
+  osc1ShapeSmoother   .setCurrentAndTargetValue(applyShapeDeadZone(p.osc1.shapeFctr));
+  osc2ShapeSmoother   .setCurrentAndTargetValue(applyShapeDeadZone(p.osc2.shapeFctr));
+  filterCutoffSmoother.setCurrentAndTargetValue(p.filter.cutoffHz);
+  filterResSmoother   .setCurrentAndTargetValue(p.filter.resonancePct * 0.01f);
+  lfo1VolSmoother     .setCurrentAndTargetValue(p.lfo1.volPct * 0.01f);
+  lfo2VolSmoother     .setCurrentAndTargetValue(p.lfo2.volPct * 0.01f);
+
+  filter.setSampleRate(newSampleRate);
   lfo1.setSampleRate(newSampleRate);
   lfo2.setSampleRate(newSampleRate);
-
   envAmp.setSampleRate(newSampleRate);
-
-  // Make modulation envelopes have a slower sample rate (updated every
-  // CONTROL_RATE_SAMPLES instead of every sample)
-  const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
   envFilter.setSampleRate(controlRate);
   envMod.setSampleRate(controlRate);
 }
@@ -151,6 +168,8 @@ void Voice::setSampleRate(float newSampleRate) {
 // ------ Control Rate ------ //
 
 void Voice::advanceLfos() {
+  lfo1.amplitude = lfo1VolSmoother.getNextValue();
+  lfo2.amplitude = lfo2VolSmoother.getNextValue();
   lfo1Out = lfo1.nextSample();
   lfo2Out = lfo2.nextSample();
 }
@@ -161,61 +180,58 @@ void Voice::advanceModEnvs() {
 }
 
 void Voice::applyModulations() {
-  // --- Osc 1 --- //
-  float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
-                           p.lfo1.shape1Pct * lfo1Out +
-                           p.lfo2.shape1Pct * lfo2Out +
-                           p.vel.shape1Pct * velocityNorm) *
-                          0.01f;
+  // --- Advance base-value smoothers ---
+  const float ampVolBase       = ampVolSmoother.getNextValue();
+  const float osc1VolBase      = osc1VolSmoother.getNextValue();
+  const float osc2VolBase      = osc2VolSmoother.getNextValue();
+  const float osc1ShapeBase    = osc1ShapeSmoother.getNextValue();
+  const float osc2ShapeBase    = osc2ShapeSmoother.getNextValue();
+  const float cutoffBase       = filterCutoffSmoother.getNextValue();
+  const float resonanceBase    = filterResSmoother.getNextValue();
 
-  osc1.shape = std::clamp(applyShapeDeadZone(p.osc1.shapeFctr) +
-                              osc1ShapeModSum,
-                          -1.0f, 1.0f);
+  // --- Osc 1 shape ---
+  const float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
+                                 p.lfo1.shape1Pct * lfo1Out +
+                                 p.lfo2.shape1Pct * lfo2Out +
+                                 p.vel.shape1Pct * velocityNorm) * 0.01f;
+  osc1.shape = std::clamp(osc1ShapeBase + osc1ShapeModSum, -1.0f, 1.0f);
+  osc1.amplitude = osc1VolBase; // Not modualted, kept here for consistency
 
-  // --- Osc 2 --- //
-  float osc2ShapeModSum = (p.modEnv.shape2Pct * envModOut +
-                           p.lfo1.shape2Pct * lfo1Out +
-                           p.lfo2.shape2Pct * lfo2Out +
-                           p.vel.shape2Pct * velocityNorm) *
-                          0.01f;
+  // --- Osc 2 shape + volume ---
+  const float osc2ShapeModSum = (p.modEnv.shape2Pct * envModOut +
+                                 p.lfo1.shape2Pct * lfo1Out +
+                                 p.lfo2.shape2Pct * lfo2Out +
+                                 p.vel.shape2Pct * velocityNorm) * 0.01f;
+  const float osc2VolModSum = p.modEnv.osc2VolPct * 0.01f * envModOut;
 
-  osc2.shape = std::clamp(applyShapeDeadZone(p.osc2.shapeFctr) +
-                              osc2ShapeModSum,
-                          -1.0f, 1.0f);
+  osc2.shape = std::clamp(osc2ShapeBase + osc2ShapeModSum, -1.0f, 1.0f);
+  osc2.amplitude = std::clamp(osc2VolBase + osc2VolModSum, 0.0f, 1.0f);
 
-  float osc2VolModSum = (p.modEnv.osc2VolPct * 0.01f * envModOut);
+  // --- Filter cutoff + resonance ---
+  const float k = p.filter.keytrackPct * 0.01f;
+  const float cutoffKeytracked = cutoffBase * std::exp2(k * note / 12.0f) * trackingCallibration;
 
-  osc2.amplitude = std::clamp(p.osc2.volPct * 0.01f + osc2VolModSum, 0.0f, 1.0f);
-
-  // --- Filter --- //
-  // Keytracking behavior: when cutoff is at its min value and keytracking = 1
-  // the filter should be perfectly in tune with the keyboard
-  float k = p.filter.keytrackPct * 0.01f;
-  float f = p.filter.cutoffHz;
-  float cutoffKeytracked = f * std::exp2(k * note / 12.0f) * trackingCallibration;
-
-  float cutoffModSum = (p.filter.envAmountHz * envFilterOut +
-                        p.lfo1.cutoffHz * lfo1Out +
-                        p.lfo2.cutoffHz * lfo2Out +
-                        p.vel.cutoffHz * velocityNorm);
+  const float cutoffModSum = (p.filter.envAmountHz * envFilterOut +
+                              p.lfo1.cutoffHz * lfo1Out +
+                              p.lfo2.cutoffHz * lfo2Out +
+                              p.vel.cutoffHz * velocityNorm);
+  const float resonanceModSum = p.vel.resonancePct * 0.01f * envModOut;
 
   filter.cutoffFreq = std::clamp(cutoffKeytracked + cutoffModSum, 20.0f, 20000.0f);
+  filter.resonance = std::clamp(resonanceBase + resonanceModSum, 0.0f, 1.0f);
 
-  float resonanceModSum = (p.vel.resonancePct * 0.01f * envModOut);
+  filter.updateParams();
 
-  filter.resonance = std::clamp(p.filter.resonancePct * 0.01f + resonanceModSum, 0.0f, 1.0f);
+  // --- Amp volume ---
+  amp.volume = ampVolBase;
 
-  // --- Voice pitch --- //
+  // --- Voice pitch ---
   constexpr float LFO_OCT_PER_UNIT = 0.001667f;
   constexpr float ENV_OCT_PER_UNIT = 0.01f;
-
   pitchModOctaves =
       p.lfo1.voiceFreqPct * LFO_OCT_PER_UNIT * lfo1Out +
       p.lfo2.voiceFreqPct * LFO_OCT_PER_UNIT * lfo2Out +
       p.modEnv.voiceFreqPct * ENV_OCT_PER_UNIT * envModOut;
-
-  // --- Update modules ONLY AFTER ALL MODs ARE CALCULATED --- //
-  filter.updateParams();
 }
 
 void Voice::tickControlRate() {
