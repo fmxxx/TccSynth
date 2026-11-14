@@ -95,13 +95,6 @@ void Synth::receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2) {
       }
       break;
     }
-
-      // Control change
-      /*
-      case 0xB0:
-        controlChange(data1, data2);
-        break;
-        */
   }
 }
 
