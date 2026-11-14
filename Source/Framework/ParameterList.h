@@ -50,7 +50,7 @@
                                                                                                            \
   /* -------------------- LFO 1 -------------------- */                                                    \
   X(lfo1Rate, "LFO 1 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.hz)                               \
-  X(lfo1Amplitude, "LFO 1 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo1.volPct)               \
+  X(lfo1Amplitude, "LFO 1 Amplitude", 0.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo1.volPct)                  \
   X(lfo1CutoffFreq, "LFO 1 Cutoff Freq", 0.0f, 20000.0f, 0.1f, 0.0f, 200.0f, "Hz", lfo1.cutoffHz)          \
   X(lfo1VoiceFreq, "LFO 1 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.voiceFreqPct)          \
   X(lfo1Shape1, "LFO 1 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo1.shape1Pct)                   \
@@ -58,7 +58,7 @@
                                                                                                            \
   /* -------------------- LFO 2 -------------------- */                                                    \
   X(lfo2Rate, "LFO 2 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo2.hz)                               \
-  X(lfo2Amplitude, "LFO 2 Amplitude", -100.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo2.volPct)               \
+  X(lfo2Amplitude, "LFO 2 Amplitude", 0.0f, 100.0f, 1.0f, 100.0f, 0.0f, "%", lfo2.volPct)                  \
   X(lfo2CutoffFreq, "LFO 2 Cutoff Freq", 0.0f, 20000.0f, 0.1f, 0.0f, 200.0f, "Hz", lfo2.cutoffHz)          \
   X(lfo2VoiceFreq, "LFO 2 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.voiceFreqPct)          \
   X(lfo2Shape1, "LFO 2 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape1Pct)                   \
@@ -81,7 +81,7 @@
   X(velResonance, "Vel Resonance", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", vel.resonancePct)               \
                                                                                                            \
   /* -------------------- Global -------------------- */                                                   \
-  X(globalGlide, "Glide", 0.0f, 10.0f, 0.1f, 0.0f, 1.0f, "s", global.glideSecs)                            \
+  X(globalGlide, "Glide", 0.0f, 5.0f, 0.01f, 0.0f, 0.5f, "s", global.glideSecs)                            \
   X(globalTuning, "Global Tuning", 400.0f, 480.0f, 0.1f, 440.0f, 440.0f, "Hz", global.tuningA4Hz)
 
 // Choice parameters: no range, has a list of names.

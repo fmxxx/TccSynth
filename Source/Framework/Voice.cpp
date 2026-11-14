@@ -119,6 +119,11 @@ void Voice::updateStaticParams() {
   lfo2.updateParams();
 
   // --- Global ---
+
+  if (p.global.glideSecs != oldGlideSecs) {
+    pitchSmoother.reset(sampleRate, p.global.glideSecs);
+    oldGlideSecs = p.global.glideSecs;
+  }
   // Used to tune the keytracked filter to same hz as oscillators
   // 20.0f is the lowest filter cutoff, make sure to update it
   // if ParamaterList changes
@@ -146,6 +151,8 @@ void Voice::setSampleRate(float newSampleRate) {
   filterResSmoother.reset(controlRate, 0.010f);
   lfo1VolSmoother.reset(controlRate, 0.010f);
   lfo2VolSmoother.reset(controlRate, 0.010f);
+
+  pitchSmoother.reset(sampleRate, p.global.glideSecs);
 
   ampVolSmoother.setCurrentAndTargetValue(p.amp.volPct * 0.01f);
   osc1VolSmoother.setCurrentAndTargetValue(p.osc1.volPct * 0.01f);
@@ -252,16 +259,16 @@ void Voice::startNote(float newNote, float newVelocity) {
   velocityNorm = newVelocity / 127.0f;
   envAmp.velocityNorm = velocityNorm;
 
-  osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
-  osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
-
   // Prevent retrigger without release from retriggering
   // Might happen if it receives two MIDI note ons witohut a note off in between
   if (envAmp.isReleased()) {
+    pitchSmoother.setCurrentAndTargetValue(note);
     if (p.osc1.doKeytrig) osc1.setPhase(0.0f);
     if (p.osc2.doKeytrig) osc2.setPhase(0.0f);
     if (lfo1.keytrig) lfo1.setPhase(0.0f);
     if (lfo2.keytrig) lfo2.setPhase(0.0f);
+  } else {
+    pitchSmoother.setTargetValue(note);  // Glide = Fingered portamento
   }
 
   envAmp.start();
@@ -279,6 +286,11 @@ void Voice::release() {
 
 // ------ Every Sample ------ //
 float Voice::render() {
+  const float note = pitchSmoother.getNextValue();
+
+  osc1period = periodFromNote(note, p.osc1.semitones, p.osc1.cents);
+  osc2period = periodFromNote(note, p.osc2.semitones, p.osc2.cents);
+
   // If pitchRatio = 1, then frequency doesnt change from midi note's
   const float pitchRatio = std::exp2(pitchModOctaves);
 

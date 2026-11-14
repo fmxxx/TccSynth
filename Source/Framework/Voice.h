@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
-
 #include <juce_audio_basics/juce_audio_basics.h>
+
+#include <cstdint>
 
 #include "../Modules/Amp.h"
 #include "../Modules/Envelope.h"
@@ -56,17 +56,22 @@ class Voice {
 
   float trackingCallibration = 0.0;  // Used to make keytrack fit note to hz curve when filter cutoff is at its min value
 
-// ------ Smoothed parameters ------ //
-  juce::SmoothedValue<float> ampVolSmoother;          // p.amp.volPct → [0, 1]
-  juce::SmoothedValue<float> osc1VolSmoother;         // p.osc1.volPct → [0, 1]
-  juce::SmoothedValue<float> osc2VolSmoother;         // p.osc2.volPct → [0, 1]
-  juce::SmoothedValue<float> osc1ShapeSmoother;       // applyShapeDeadZone(p.osc1.shapeFctr)
-  juce::SmoothedValue<float> osc2ShapeSmoother;       // applyShapeDeadZone(p.osc2.shapeFctr)
-  juce::SmoothedValue<float> filterCutoffSmoother;    // p.filter.cutoffHz
-  juce::SmoothedValue<float> filterResSmoother;       // p.filter.resonancePct * 0.01f
+  // ------ Smoothed parameters ------ //
+  juce::SmoothedValue<float> ampVolSmoother;
+  juce::SmoothedValue<float> osc1VolSmoother;
+  juce::SmoothedValue<float> osc2VolSmoother;
+  juce::SmoothedValue<float> osc1ShapeSmoother;
+  juce::SmoothedValue<float> osc2ShapeSmoother;
+  juce::SmoothedValue<float> filterCutoffSmoother;
+  juce::SmoothedValue<float> filterResSmoother;
   // LFO amplitudes — consumed at CONTROL rate, reset() with control rate
   juce::SmoothedValue<float> lfo1VolSmoother;
   juce::SmoothedValue<float> lfo2VolSmoother;
+
+  // Audio rate
+  juce::SmoothedValue<float> pitchSmoother;
+  // ------ Old parameters ------ //
+  float oldGlideSecs = 0.0f;
 
   // ------ Modulator outputs ------ //
   float envFilterOut = 0.0f;
@@ -85,9 +90,6 @@ class Voice {
   Envelope envMod;
   Lfo lfo1;
   Lfo lfo2;
-  // This lfo belongs to voice[0] and is shared by all voices
-  // Used for global vibrato
-  Lfo lfoMono;
 
   // ------ Control Rate ------ //
   void advanceLfos();
