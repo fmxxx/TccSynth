@@ -98,8 +98,6 @@ void Synth::receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2) {
   }
 }
 
-void Synth::controlChange(uint8_t data1, uint8_t data2) {}
-
 void Synth::noteOn(float note, float velocity) {
   int voice = 0;  // index of the voice to use (0 = mono voice)
 
