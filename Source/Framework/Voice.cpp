@@ -137,25 +137,25 @@ void Voice::setSampleRate(float newSampleRate) {
 
   // Control-rate smoothers — consumed in updateControlRate / advanceLfos
   const float controlRate = newSampleRate / static_cast<float>(CONTROL_RATE_SAMPLES);
-  ampVolSmoother      .reset(controlRate, 0.010f);
-  osc1VolSmoother     .reset(controlRate, 0.010f);
-  osc2VolSmoother     .reset(controlRate, 0.010f);
-  osc1ShapeSmoother   .reset(controlRate, 0.010f);
-  osc2ShapeSmoother   .reset(controlRate, 0.010f);
+  ampVolSmoother.reset(controlRate, 0.010f);
+  osc1VolSmoother.reset(controlRate, 0.010f);
+  osc2VolSmoother.reset(controlRate, 0.010f);
+  osc1ShapeSmoother.reset(controlRate, 0.010f);
+  osc2ShapeSmoother.reset(controlRate, 0.010f);
   filterCutoffSmoother.reset(controlRate, 0.020f);
-  filterResSmoother   .reset(controlRate, 0.010f);
-  lfo1VolSmoother     .reset(controlRate, 0.010f);
-  lfo2VolSmoother     .reset(controlRate, 0.010f);
+  filterResSmoother.reset(controlRate, 0.010f);
+  lfo1VolSmoother.reset(controlRate, 0.010f);
+  lfo2VolSmoother.reset(controlRate, 0.010f);
 
-  ampVolSmoother      .setCurrentAndTargetValue(p.amp.volPct * 0.01f);
-  osc1VolSmoother     .setCurrentAndTargetValue(p.osc1.volPct * 0.01f);
-  osc2VolSmoother     .setCurrentAndTargetValue(p.osc2.volPct * 0.01f);
-  osc1ShapeSmoother   .setCurrentAndTargetValue(applyShapeDeadZone(p.osc1.shapeFctr));
-  osc2ShapeSmoother   .setCurrentAndTargetValue(applyShapeDeadZone(p.osc2.shapeFctr));
+  ampVolSmoother.setCurrentAndTargetValue(p.amp.volPct * 0.01f);
+  osc1VolSmoother.setCurrentAndTargetValue(p.osc1.volPct * 0.01f);
+  osc2VolSmoother.setCurrentAndTargetValue(p.osc2.volPct * 0.01f);
+  osc1ShapeSmoother.setCurrentAndTargetValue(applyShapeDeadZone(p.osc1.shapeFctr));
+  osc2ShapeSmoother.setCurrentAndTargetValue(applyShapeDeadZone(p.osc2.shapeFctr));
   filterCutoffSmoother.setCurrentAndTargetValue(p.filter.cutoffHz);
-  filterResSmoother   .setCurrentAndTargetValue(p.filter.resonancePct * 0.01f);
-  lfo1VolSmoother     .setCurrentAndTargetValue(p.lfo1.volPct * 0.01f);
-  lfo2VolSmoother     .setCurrentAndTargetValue(p.lfo2.volPct * 0.01f);
+  filterResSmoother.setCurrentAndTargetValue(p.filter.resonancePct * 0.01f);
+  lfo1VolSmoother.setCurrentAndTargetValue(p.lfo1.volPct * 0.01f);
+  lfo2VolSmoother.setCurrentAndTargetValue(p.lfo2.volPct * 0.01f);
 
   filter.setSampleRate(newSampleRate);
   lfo1.setSampleRate(newSampleRate);
@@ -181,27 +181,29 @@ void Voice::advanceModEnvs() {
 
 void Voice::applyModulations() {
   // --- Advance base-value smoothers ---
-  const float ampVolBase       = ampVolSmoother.getNextValue();
-  const float osc1VolBase      = osc1VolSmoother.getNextValue();
-  const float osc2VolBase      = osc2VolSmoother.getNextValue();
-  const float osc1ShapeBase    = osc1ShapeSmoother.getNextValue();
-  const float osc2ShapeBase    = osc2ShapeSmoother.getNextValue();
-  const float cutoffBase       = filterCutoffSmoother.getNextValue();
-  const float resonanceBase    = filterResSmoother.getNextValue();
+  const float ampVolBase = ampVolSmoother.getNextValue();
+  const float osc1VolBase = osc1VolSmoother.getNextValue();
+  const float osc2VolBase = osc2VolSmoother.getNextValue();
+  const float osc1ShapeBase = osc1ShapeSmoother.getNextValue();
+  const float osc2ShapeBase = osc2ShapeSmoother.getNextValue();
+  const float cutoffBase = filterCutoffSmoother.getNextValue();
+  const float resonanceBase = filterResSmoother.getNextValue();
 
   // --- Osc 1 shape ---
   const float osc1ShapeModSum = (p.modEnv.shape1Pct * envModOut +
                                  p.lfo1.shape1Pct * lfo1Out +
                                  p.lfo2.shape1Pct * lfo2Out +
-                                 p.vel.shape1Pct * velocityNorm) * 0.01f;
+                                 p.vel.shape1Pct * velocityNorm) *
+                                0.01f;
   osc1.shape = std::clamp(osc1ShapeBase + osc1ShapeModSum, -1.0f, 1.0f);
-  osc1.amplitude = osc1VolBase; // Not modualted, kept here for consistency
+  osc1.amplitude = osc1VolBase;  // Not modualted, kept here for consistency
 
   // --- Osc 2 shape + volume ---
   const float osc2ShapeModSum = (p.modEnv.shape2Pct * envModOut +
                                  p.lfo1.shape2Pct * lfo1Out +
                                  p.lfo2.shape2Pct * lfo2Out +
-                                 p.vel.shape2Pct * velocityNorm) * 0.01f;
+                                 p.vel.shape2Pct * velocityNorm) *
+                                0.01f;
   const float osc2VolModSum = p.modEnv.osc2VolPct * 0.01f * envModOut;
 
   osc2.shape = std::clamp(osc2ShapeBase + osc2ShapeModSum, -1.0f, 1.0f);
