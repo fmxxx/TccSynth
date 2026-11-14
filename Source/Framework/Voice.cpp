@@ -121,9 +121,14 @@ void Voice::updateStaticParams() {
   // --- Global ---
 
   if (p.global.glideSecs != oldGlideSecs) {
+    const float savedCurrent = pitchSmoother.getCurrentValue();
+    const float savedTarget = pitchSmoother.getTargetValue();
     pitchSmoother.reset(sampleRate, p.global.glideSecs);
+    pitchSmoother.setCurrentAndTargetValue(savedCurrent);  // restore position
+    pitchSmoother.setTargetValue(savedTarget);             // restore destination
     oldGlideSecs = p.global.glideSecs;
   }
+
   // Used to tune the keytracked filter to same hz as oscillators
   // 20.0f is the lowest filter cutoff, make sure to update it
   // if ParamaterList changes
