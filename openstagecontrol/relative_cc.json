@@ -1,0 +1,50 @@
+{
+  "createdWith": "Open Stage Control",
+  "version": "1.15.6",
+  "type": "session",
+  "content": {
+    "type": "root",
+    "id": "root",
+    "visible": true,
+    "width": "100%",
+    "height": "100%",
+    "scroll": "hidden",
+    "widgets": [
+      {
+        "type": "panel",
+        "id": "main_panel",
+        "top": "0%",
+        "left": "0%",
+        "width": "100%",
+        "height": "100%",
+        "widgets": [
+          {"type":"button","id":"note_36","label":"Note 36","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,36],"target":"midi:my_controller","top":"5%","left":"2%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_37","label":"Note 37","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,37],"target":"midi:my_controller","top":"5%","left":"14%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_38","label":"Note 38","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,38],"target":"midi:my_controller","top":"5%","left":"26%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_39","label":"Note 39","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,39],"target":"midi:my_controller","top":"5%","left":"38%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_40","label":"Note 40","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,40],"target":"midi:my_controller","top":"5%","left":"50%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_41","label":"Note 41","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,41],"target":"midi:my_controller","top":"5%","left":"62%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_42","label":"Note 42","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,42],"target":"midi:my_controller","top":"5%","left":"74%","width":"11%","height":"45%"},
+          {"type":"button","id":"note_43","label":"Note 43","mode":"push","on":127,"off":0,"address":"/note","preArgs":[10,43],"target":"midi:my_controller","top":"5%","left":"86%","width":"11%","height":"45%"},
+          {"type":"button","id":"cc_100_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,100],"target":"midi:my_controller","top":"55%","left":"2%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_100_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,100],"target":"midi:my_controller","top":"55%","left":"7.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_101_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,101],"target":"midi:my_controller","top":"55%","left":"14%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_101_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,101],"target":"midi:my_controller","top":"55%","left":"19.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_102_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,102],"target":"midi:my_controller","top":"55%","left":"26%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_102_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,102],"target":"midi:my_controller","top":"55%","left":"31.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_103_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,103],"target":"midi:my_controller","top":"55%","left":"38%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_103_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,103],"target":"midi:my_controller","top":"55%","left":"43.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_104_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,104],"target":"midi:my_controller","top":"55%","left":"50%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_104_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,104],"target":"midi:my_controller","top":"55%","left":"55.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_105_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,105],"target":"midi:my_controller","top":"55%","left":"62%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_105_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,105],"target":"midi:my_controller","top":"55%","left":"67.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_106_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,106],"target":"midi:my_controller","top":"55%","left":"74%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_106_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,106],"target":"midi:my_controller","top":"55%","left":"79.8%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_107_minus","label":"-","mode":"tap","on":63,"off":0,"address":"/control","preArgs":[10,107],"target":"midi:my_controller","top":"55%","left":"86%","width":"5.2%","height":"40%"},
+          {"type":"button","id":"cc_107_plus","label":"+","mode":"tap","on":64,"off":0,"address":"/control","preArgs":[10,107],"target":"midi:my_controller","top":"55%","left":"91.8%","width":"5.2%","height":"40%"}
+        ]
+      }
+    ]
+  }
+}
+
