@@ -61,10 +61,13 @@ class TccSynthAudioProcessor : public juce::AudioProcessor,
   std::array<bool, 128> ccIsBool{};
   std::array<std::atomic<float>, 128> pendingCC;
 
+  int bank = 0;  // Bank used for relative encoders
+
   void setupCCMapping();
 
   void splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages);
   void handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2);
+  void nudgeParameter(int cc, int steps);
   void render(juce::AudioBuffer<float>& buffer, int sampleCount, int bufferOffset);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TccSynthAudioProcessor)

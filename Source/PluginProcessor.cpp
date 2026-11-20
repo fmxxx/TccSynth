@@ -2,6 +2,7 @@
 
 #include <JucePluginDefines.h>
 
+#include "Framework/ParameterCCList.h"
 #include "PluginEditor.h"
 
 // Constructor
@@ -27,70 +28,9 @@ TccSynthAudioProcessor::TccSynthAudioProcessor()
 }
 
 void TccSynthAudioProcessor::setupCCMapping() {
-  struct Entry {
-    int cc;
-    const char* paramId;
-  };
-  static const Entry table[] = {
-      {1, "lfo1Amplitude"},
-      {2, "lfo2Amplitude"},
-      {5, "globalGlide"},
-      {7, "ampVolume"},
-      {11, "ampVelocity"},
-      {12, "osc1Shape"},
-      {13, "osc2Shape"},
-      {14, "osc1Semitone"},
-      {15, "osc1Cents"},
-      {16, "osc2Semitone"},
-      {17, "osc2Cents"},
-      {18, "filterKeytrack"},
-      {19, "filterEnvAmount"},
-      {20, "globalTuning"},
-      {21, "lfo1CutoffFreq"},
-      {22, "lfo1VoiceFreq"},
-      {23, "lfo1Shape1"},
-      {24, "lfo1Shape2"},
-      {25, "lfo2CutoffFreq"},
-      {26, "lfo2VoiceFreq"},
-      {27, "lfo2Shape1"},
-      {28, "lfo2Shape2"},
-      {29, "modEnvAttack"},
-      {30, "modEnvDecay"},
-      {31, "modEnvSustain"},
-      {33, "modEnvRelease"},
-      {34, "modEnvOsc2Volume"},
-      {35, "modEnvVoiceFreq"},
-      {36, "modEnvShape1"},
-      {37, "modEnvShape2"},
-      {38, "velShape1"},
-      {39, "velShape2"},
-      {40, "velCutoff"},
-      {41, "velResonance"},
-      {42, "lfo1Shape"},
-      {43, "lfo2Shape"},
-      {44, "ampAttack"},
-      {45, "ampDecay"},
-      {46, "ampSustain"},
-      {47, "ampRelease"},
-      {70, "osc1Volume"},
-      {71, "filterResonance"},
-      {72, "filterRelease"},
-      {73, "filterAttack"},
-      {74, "filterCutoff"},
-      {75, "filterDecay"},
-      {76, "lfo1Rate"},
-      {77, "lfo2Rate"},
-      {79, "filterSustain"},
-      {80, "ampAttackFromZero"},
-      {81, "lfo1Keytrig"},
-      {82, "lfo2Keytrig"},
-      {83, "osc1Keytrig"},
-      {85, "osc2Volume"},
-      {86, "osc2Keytrig"},
-      {87, "globalVoiceCount"},
-  };
-
-  for (const auto& e : table) {
+  for (const auto& e : CCtable) {
+    if (e.cc < 0 || e.cc > 127) continue;  // skip placeholders
+    if (e.paramId == nullptr || e.paramId[0] == '\0') continue;
     if (auto* p = params.apvts.getParameter(e.paramId)) {
       ccParamMap[e.cc] = p;
       ccIsBool[e.cc] = (dynamic_cast<juce::AudioParameterBool*>(p) != nullptr);
@@ -201,56 +141,92 @@ void TccSynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 }
 
 void TccSynthAudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2) {
-  // Print out the MIDI message:
-  // char s[16];
-  // snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
-  // DBG(s);
+  constexpr int BANK_CHANNEL = 10;
+  constexpr int BANK_MIN_NOTE = 36;  // C1
+  constexpr int BANK_MAX_NOTE = 43;
+  constexpr int RELATIVE_CC_START = 100;
+  constexpr int RELATIVE_CC_END = 107;
+  constexpr int CCS_PER_BANK = RELATIVE_CC_END - RELATIVE_CC_START + 1;
 
-  // CC mapped to a parameter → store pending value, consume the message.
+  // Print out the MIDI message:
+  // char s[64];
+  // uint8_t status = data0 & 0xF0;         // Upper nibble (command)
+  // uint8_t channel = (data0 & 0x0F) + 1;  // Lower nibble (1-16)
+
+  // if (status == 0xB0) {
+  //   snprintf(s, sizeof(s), "CC | Ch:%d Num:%d Val:%d (%02hhX %02hhX %02hhX)",
+  //            channel, data1, data2, data0, data1, data2);
+  // } else {
+  //   snprintf(s, sizeof(s), "Ch:%d (%02hhX %02hhX %02hhX)",
+  //            channel, data0, data1, data2);
+  // }
+
+  DBG(s);
+
+  juce::MidiMessage msg(data0, data1, data2);
+
+  if (msg.getChannel() == BANK_CHANNEL) {
+    int note = msg.getNoteNumber();
+    if (note >= BANK_MIN_NOTE && note <= BANK_MAX_NOTE) {
+      bank = msg.getNoteNumber() - BANK_MIN_NOTE;
+      DBG("new bank: " << bank);
+    }
+  }
+
+  // CC mapped to a parameter -> store pending value, consume the message.
   // Unmapped CCs fall through to synth.receiveMidi (no-op today, useful later).
   if ((data0 & 0xF0) == 0xB0) {
     const int cc = data1 & 0x7F;
-    if (ccParamMap[cc] != nullptr) {
-      const int value = data2 & 0x7F;
+    const int value = data2 & 0x7F;
+
+    if (cc >= RELATIVE_CC_START && cc <= RELATIVE_CC_END) {
+      // Binary offset
+      int CCid = (cc - RELATIVE_CC_START) + bank * CCS_PER_BANK;
+
+      DBG("CCid: " << CCid << " |CC#: " << CCtable[CCid].cc);
+      DBG(value);
+      if (value > 64) {
+        DBG("+1");
+        nudgeParameter(CCtable[CCid].cc, +1);
+      } else if (value < 64) {
+        DBG("-1");
+        nudgeParameter(CCtable[CCid].cc, -1);
+      }
+    } else {
+      // All other CCs: absolute
       if (ccIsBool[cc]) {
-        // Standard MIDI switch: 0-63 off, 64-127 on.
         pendingCC[cc].store(value >= 64 ? 1.0f : 0.0f);
       } else {
-        // /128: 128 values spread evenly, CC 64 = exactly 0.5 (the middle).
         pendingCC[cc].store(value / 128.0f);
       }
-      return;
     }
-  }
-  // Control Change
-  /*
-  if ((data0 & 0xF0) == 0xB0) {
-    if (data1 == 0x07) {  // volume
-      float volumeCtl = float(data2) / 127.0f;
-      outputLevelParam->beginChangeGesture();
-      outputLevelParam->setValueNotifyingHost(volumeCtl);
-      outputLevelParam->endChangeGesture();
-    }
+    return;
   }
 
-  // Program Change
-  if ((data0 & 0xF0) == 0xC0) {
-    if (data1 < presets.size()) {
-      setCurrentProgram(data1);
-    }
-  }
-  */
-
-  // TODO: Write function that does the dyanmic selection
-  // Think of it a virtual cc bank where each CC is hardcoded to a parameter, when a midi note+channel message is sent
-  // it tranposese the bank up, ie
-  // if (notemessage.channel == 16 AND notemessage.note >= 0 AND
-  // notemessage.note < 8) {
-  // bank = virtualCC + notemessage.note * 8 }
-  // Maybe use a switch statement? That way the user can configure any
-  // Midi note instead of having to use 0 to 7
+  if (msg.getChannel() == BANK_CHANNEL) return;
 
   synth.receiveMidi(data0, data1, data2);
+}
+
+void TccSynthAudioProcessor::nudgeParameter(int cc, int steps) {
+  if (cc < 0 || cc > 127) return;
+  if (ccParamMap[cc] == nullptr) return;
+  if (steps == 0) return;
+
+  constexpr float STEP = 1.0f / 127.0f;
+
+  // Base = pending if a click already arrived this block, else current param.
+  float base = pendingCC[cc].load();
+  if (base < 0.0f) base = ccParamMap[cc]->getValue();
+
+  const float newVal = std::clamp(base + static_cast<float>(steps) * STEP,
+                                  0.0f, 1.0f);
+
+  if (ccIsBool[cc]) {
+    pendingCC[cc].store(newVal >= 0.5f ? 1.0f : 0.0f);
+  } else {
+    pendingCC[cc].store(newVal);
+  }
 }
 
 void TccSynthAudioProcessor::timerCallback() {
