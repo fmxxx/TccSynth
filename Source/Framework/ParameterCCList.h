@@ -51,7 +51,7 @@ static const Entry CCtable[] = {
     {76, "lfo1Rate"},
     {42, "lfo1Shape"},
     {23, "lfo1Shape1"},
-    {24, "lfo1Shape2"},
+    {24, "lfo1AmpVol"},
     {22, "lfo1VoiceFreq"},
     {81, "lfo1Keytrig"},
 

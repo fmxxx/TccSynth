@@ -41,8 +41,19 @@ struct SynthParams {
           cutoffHz = 0.0f,
           voiceFreqPct = 0.0f,
           shape1Pct = 0.0f,
+          ampVolPct = 0.0f;
+  } lfo1;
+
+  struct {
+    float hz = 1.0f;
+    int waveformId = 0;
+    bool doKeytrig = false;
+    float volPct = 100.0f,
+          cutoffHz = 0.0f,
+          voiceFreqPct = 0.0f,
+          shape1Pct = 0.0f,
           shape2Pct = 0.0f;
-  } lfo1, lfo2;
+  } lfo2;
 
   struct {
     float attackSecs = 0.1f,

@@ -212,7 +212,6 @@ void Voice::applyModulations() {
 
   // --- Osc 2 shape + volume ---
   const float osc2ShapeModSum = (p.modEnv.shape2Pct * envModOut +
-                                 p.lfo1.shape2Pct * lfo1Out +
                                  p.lfo2.shape2Pct * lfo2Out +
                                  p.vel.shape2Pct * velocityNorm) *
                                 0.01f;
@@ -310,7 +309,7 @@ float Voice::render() {
 
   envAmpOut = envAmp.nextSample();
 
-  float ampOut = amp.nextSample(filterOut, envAmpOut);
+  float ampOut = amp.nextSample(filterOut, (envAmpOut - ((lfo1Out + 1.f) * p.lfo1.ampVolPct * 0.002f)));
 
   return ampOut;
 }
