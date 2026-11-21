@@ -1,9 +1,18 @@
 #pragma once
+#include <array>
+
 #include <JuceHeader.h>
 
 #include "ParameterList.h"
 
 class Synth;
+
+struct Entry {
+  int cc;  // -1 = no MIDI CC assigned
+  const char* paramId;
+};
+
+extern const std::array<Entry, 64> CCtable;
 
 // ------ Parameter IDs ------ //
 namespace ParameterID {

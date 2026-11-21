@@ -2,7 +2,6 @@
 
 #include <JucePluginDefines.h>
 
-#include "Framework/ParameterCCList.h"
 #include "PluginEditor.h"
 
 // Constructor
