@@ -15,6 +15,7 @@ inline juce::NormalisableRange<float> makeRange(float min, float max,
 }  // namespace
 
 // ------ Lifetime ------ //
+
 ParameterHandler::ParameterHandler(juce::AudioProcessor& p)
     : processor(p),
       apvts(p, nullptr, "Parameters", createLayout()) {
@@ -34,11 +35,11 @@ std::array<Entry, 64> makeCCtable() {
   std::array<Entry, 64> table{};
   for (auto& entry : table) entry = {-1, ""};
 
-#define SET_CC(id, numID, cc)                                  \
-  static_assert((numID) >= -1 && (numID) < 64,                 \
+#define SET_CC(id, numID, cc)                                   \
+  static_assert((numID) >= -1 && (numID) < 64,                  \
                 "Parameter numID must be in the range -1..63"); \
-  static_assert((cc) >= -1 && (cc) <= 127,                     \
-                "Parameter CC must be in the range -1..127");  \
+  static_assert((cc) >= -1 && (cc) <= 127,                      \
+                "Parameter CC must be in the range -1..127");   \
   if ((numID) >= 0) table[(numID)] = {(cc), #id};
 
 #define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
@@ -58,10 +59,6 @@ std::array<Entry, 64> makeCCtable() {
   PARAM_INT_LIST
 #undef X
 
-#define X(id, numID, cc) SET_CC(id, numID, cc)
-  PARAM_CC_ALIAS_LIST
-#undef X
-
 #undef SET_CC
   return table;
 }
@@ -70,30 +67,31 @@ std::array<Entry, 64> makeCCtable() {
 const std::array<Entry, 64> CCtable = makeCCtable();
 
 // ------ Pointer Layout ------ //
+
 juce::AudioProcessorValueTreeState::ParameterLayout ParameterHandler::createLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
 #define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
-  layout.add(std::make_unique<juce::AudioParameterFloat>(     \
-      ParameterID::id, disp, makeRange(mn, mx, st, ctr), def, \
+  layout.add(std::make_unique<juce::AudioParameterFloat>(       \
+      ParameterID::id, disp, makeRange(mn, mx, st, ctr), def,   \
       juce::AudioParameterFloatAttributes().withLabel(lbl)));
   PARAM_FLOAT_LIST
 #undef X
 
-#define X(id, disp, names, def, path, numID, cc)            \
+#define X(id, disp, names, def, path, numID, cc)           \
   layout.add(std::make_unique<juce::AudioParameterChoice>( \
       ParameterID::id, disp,                               \
       juce::StringArray::fromTokens(names, "|", {}), def));
   PARAM_CHOICE_LIST
 #undef X
 
-#define X(id, disp, def, path, numID, cc)                 \
+#define X(id, disp, def, path, numID, cc)                \
   layout.add(std::make_unique<juce::AudioParameterBool>( \
       ParameterID::id, disp, def));
   PARAM_BOOL_LIST
 #undef X
 
-#define X(id, disp, mn, mx, def, path, numID, cc)        \
+#define X(id, disp, mn, mx, def, path, numID, cc)       \
   layout.add(std::make_unique<juce::AudioParameterInt>( \
       ParameterID::id, disp, mn, mx, def));
   PARAM_INT_LIST
@@ -120,6 +118,7 @@ void ParameterHandler::castAllParameters() {
 }
 
 // ------ Push Paramaters to Synth ------ //
+
 void ParameterHandler::applyToSynth(Synth& synth) {
   // Columns: id, display, min, max, step, default, centre, unit, destination, numID, CC
 #define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
