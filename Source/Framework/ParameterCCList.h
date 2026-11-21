@@ -79,9 +79,9 @@ static const Entry CCtable[] = {
     {5, "globalGlide"},
     {20, "globalTuning"},
     {87, "globalVoiceCount"},
-    {80, "ampAttackFromZero"},
     {83, "osc1Keytrig"},
     {86, "osc2Keytrig"},
+    {-1, ""},  // placeholder
     {-1, ""},  // placeholder
     {-1, ""},  // placeholder
 };
