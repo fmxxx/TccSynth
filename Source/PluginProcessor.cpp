@@ -161,15 +161,12 @@ void TccSynthAudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t da
   //            channel, data0, data1, data2);
   // }
 
-  DBG(s);
-
   juce::MidiMessage msg(data0, data1, data2);
 
   if (msg.getChannel() == BANK_CHANNEL) {
     int note = msg.getNoteNumber();
     if (note >= BANK_MIN_NOTE && note <= BANK_MAX_NOTE) {
       bank = msg.getNoteNumber() - BANK_MIN_NOTE;
-      DBG("new bank: " << bank);
     }
   }
 
@@ -183,13 +180,9 @@ void TccSynthAudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t da
       // Binary offset
       int CCid = (cc - RELATIVE_CC_START) + bank * CCS_PER_BANK;
 
-      DBG("CCid: " << CCid << " |CC#: " << CCtable[CCid].cc);
-      DBG(value);
       if (value > 64) {
-        DBG("+1");
         nudgeParameter(CCtable[CCid].cc, +1);
       } else if (value < 64) {
-        DBG("-1");
         nudgeParameter(CCtable[CCid].cc, -1);
       }
     } else {
