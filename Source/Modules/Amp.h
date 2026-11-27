@@ -6,9 +6,9 @@ class Amp {
   // ------ Exposed Parameters ------ //
   float volume = 0.0f;  // [0,1]
 
-  float output = 0.0f;
-
+  // ------ Per sample ------ //
   float nextSample(float input, float envLevel);
 
  private:
+  float output = 0.0f;
 };

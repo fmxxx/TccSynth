@@ -15,6 +15,7 @@ inline juce::NormalisableRange<float> makeRange(float min, float max,
 }  // namespace
 
 // ------ Lifetime ------ //
+
 ParameterHandler::ParameterHandler(juce::AudioProcessor& p)
     : processor(p),
       apvts(p, nullptr, "Parameters", createLayout()) {
@@ -26,31 +27,71 @@ ParameterHandler::~ParameterHandler() {
   apvts.state.removeListener(this);
 }
 
+// ------ Create table of Numerical IDs and MIDI CCs ------ //
+// numIDs are for dynamic, relative control
+// CCs are standard fixed MIDI CCs
+namespace {
+std::array<Entry, 64> makeCCtable() {
+  std::array<Entry, 64> table{};
+  for (auto& entry : table) entry = {-1, ""};
+
+#define SET_CC(id, numID, cc)                                   \
+  static_assert((numID) >= -1 && (numID) < 64,                  \
+                "Parameter numID must be in the range -1..63"); \
+  static_assert((cc) >= -1 && (cc) <= 127,                      \
+                "Parameter CC must be in the range -1..127");   \
+  if ((numID) >= 0) table[(numID)] = {(cc), #id};
+
+#define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
+  SET_CC(id, numID, cc)
+  PARAM_FLOAT_LIST
+#undef X
+
+#define X(id, disp, names, def, path, numID, cc) SET_CC(id, numID, cc)
+  PARAM_CHOICE_LIST
+#undef X
+
+#define X(id, disp, def, path, numID, cc) SET_CC(id, numID, cc)
+  PARAM_BOOL_LIST
+#undef X
+
+#define X(id, disp, mn, mx, def, path, numID, cc) SET_CC(id, numID, cc)
+  PARAM_INT_LIST
+#undef X
+
+#undef SET_CC
+  return table;
+}
+}  // namespace
+
+const std::array<Entry, 64> CCtable = makeCCtable();
+
 // ------ Pointer Layout ------ //
+
 juce::AudioProcessorValueTreeState::ParameterLayout ParameterHandler::createLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-#define X(id, disp, mn, mx, st, def, ctr, lbl, path)          \
-  layout.add(std::make_unique<juce::AudioParameterFloat>(     \
-      ParameterID::id, disp, makeRange(mn, mx, st, ctr), def, \
+#define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
+  layout.add(std::make_unique<juce::AudioParameterFloat>(       \
+      ParameterID::id, disp, makeRange(mn, mx, st, ctr), def,   \
       juce::AudioParameterFloatAttributes().withLabel(lbl)));
   PARAM_FLOAT_LIST
 #undef X
 
-#define X(id, disp, names, def, path)                      \
+#define X(id, disp, names, def, path, numID, cc)           \
   layout.add(std::make_unique<juce::AudioParameterChoice>( \
       ParameterID::id, disp,                               \
       juce::StringArray::fromTokens(names, "|", {}), def));
   PARAM_CHOICE_LIST
 #undef X
 
-#define X(id, disp, def, path)                           \
+#define X(id, disp, def, path, numID, cc)                \
   layout.add(std::make_unique<juce::AudioParameterBool>( \
       ParameterID::id, disp, def));
   PARAM_BOOL_LIST
 #undef X
 
-#define X(id, disp, mn, mx, def, path)                  \
+#define X(id, disp, mn, mx, def, path, numID, cc)       \
   layout.add(std::make_unique<juce::AudioParameterInt>( \
       ParameterID::id, disp, mn, mx, def));
   PARAM_INT_LIST
@@ -77,27 +118,28 @@ void ParameterHandler::castAllParameters() {
 }
 
 // ------ Push Paramaters to Synth ------ //
+
 void ParameterHandler::applyToSynth(Synth& synth) {
-  // Columns: id, display, min, max, step, default, centre, unit, destination
-#define X(id, disp, mn, mx, st, def, ctr, lbl, path) \
+  // Columns: id, display, min, max, step, default, centre, unit, destination, numID, CC
+#define X(id, disp, mn, mx, st, def, ctr, lbl, path, numID, cc) \
   synth.p.path = id##Param->get();
   PARAM_FLOAT_LIST
 #undef X
 
-  // Columns: id, display, names, default index, destination
-#define X(id, disp, names, def, path) \
+  // Columns: id, display, names, default index, destination, numID, CC
+#define X(id, disp, names, def, path, numID, cc) \
   synth.p.path = id##Param->getIndex();
   PARAM_CHOICE_LIST
 #undef X
 
-  // Columns: id, display, default, destination
-#define X(id, disp, def, path) \
+  // Columns: id, display, default, destination, numID, CC
+#define X(id, disp, def, path, numID, cc) \
   synth.p.path = id##Param->get();
   PARAM_BOOL_LIST
 #undef X
 
-  // Columns: id, display, min, max, default, destination
-#define X(id, disp, mn, mx, def, path) \
+  // Columns: id, display, min, max, default, destination, numID, CC
+#define X(id, disp, mn, mx, def, path, numID, cc) \
   synth.p.path = id##Param->get();
   PARAM_INT_LIST
 #undef X

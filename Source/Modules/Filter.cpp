@@ -15,7 +15,7 @@ void Filter::reset() {
   s4 = 0.0f;
 }
 
-void Filter::setsampleRate(float newSampleRate) {
+void Filter::setSampleRate(float newSampleRate) {
   sampleRate = std::max(newSampleRate, 1.0f);
   updateParams();
 }

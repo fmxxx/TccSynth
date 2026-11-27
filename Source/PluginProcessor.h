@@ -4,10 +4,11 @@
 #include "Framework/ParameterHandler.h"
 #include "Framework/Synth.h"
 
-class TccSynthAudioProcessor : public juce::AudioProcessor {
+class TccSynthAudioProcessor : public juce::AudioProcessor,
+                               private juce::Timer {
  public:
   TccSynthAudioProcessor();
-  ~TccSynthAudioProcessor() override;
+  ~TccSynthAudioProcessor() = default;
 
   /// ------ ------ ------ //
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -41,6 +42,8 @@ class TccSynthAudioProcessor : public juce::AudioProcessor {
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
 
+  void timerCallback() override;
+
   // Accessors for the editor
   ParameterHandler& getParameters() { return params; }
   Synth& getSynth() { return synth; }
@@ -50,8 +53,21 @@ class TccSynthAudioProcessor : public juce::AudioProcessor {
   ParameterHandler params{*this};
   Synth synth;
 
+  // ------ MIDI CC ------ //
+  // ccParamMap[cc]   = parameter that CC controls (nullptr = unmapped)
+  // ccIsBool[cc]     = true if the parameter is a bool (>=64 threshold)
+  // pendingCC[cc]    = pending normalized value (>=0), -1.0f = "no pending update"
+  std::array<juce::AudioProcessorParameter*, 128> ccParamMap{};
+  std::array<bool, 128> ccIsBool{};
+  std::array<std::atomic<float>, 128> pendingCC;
+
+  int bank = 0;  // Bank used for relative encoders
+
+  void setupCCMapping();
+
   void splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages);
   void handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2);
+  void nudgeParameter(int cc, int steps);
   void render(juce::AudioBuffer<float>& buffer, int sampleCount, int bufferOffset);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TccSynthAudioProcessor)

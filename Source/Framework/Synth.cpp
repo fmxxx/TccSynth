@@ -41,6 +41,7 @@ void Synth::updateVoicesParams() {
   }
 };
 
+// ------ Per sample ------ //
 void Synth::render(float** outputBuffers, int sampleCount) {
   float* left = outputBuffers[0];
   float* right = outputBuffers[1];
@@ -75,6 +76,7 @@ void Synth::render(float** outputBuffers, int sampleCount) {
   protectYourEars(right, sampleCount);
 }
 
+// ------ MIDI ------ //
 void Synth::receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2) {
   switch (data0 & 0xF0) {  // status byte (all channels)
     // Note off
@@ -93,17 +95,8 @@ void Synth::receiveMidi(uint8_t data0, uint8_t data1, uint8_t data2) {
       }
       break;
     }
-
-      // Control change
-      /*
-      case 0xB0:
-        controlChange(data1, data2);
-        break;
-        */
   }
 }
-
-void Synth::controlChange(uint8_t data1, uint8_t data2) {}
 
 void Synth::noteOn(float note, float velocity) {
   int voice = 0;  // index of the voice to use (0 = mono voice)
@@ -125,6 +118,7 @@ void Synth::noteOff(float note) {
   }
 }
 
+// ------ Polyphony Stuff ------ //
 int Synth::findNewVoice(float note) const {
   // Note priorities
   // 1. Same note as we're activating
@@ -154,7 +148,7 @@ int Synth::findNewVoice(float note) const {
   float l = 100.0f;  // Large value (louder than any sample)
 
   for (int i = 0; i < polyphony; ++i) {
-    if (!voices[i].envAmp.isAttack()) {
+    if (!voices[i].isAttack()) {
       const float level = voices[i].envAmpOut;
       if (level < l) {
         l = level;

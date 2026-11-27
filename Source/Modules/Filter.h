@@ -9,7 +9,7 @@ class Filter {
 
   Filter();
   void reset();
-  void setsampleRate(float newsampleRate);
+  void setSampleRate(float newsampleRate);
 
   void updateParams();
   void applyModulations(float cutoffMod, float resonanceMod);

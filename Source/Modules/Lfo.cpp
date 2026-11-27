@@ -8,22 +8,20 @@
 
 #include "../Constants.h"
 
-void Lfo::reset() {
-  // Currently nothing needs to be reset
-  // Phase reset (if lfo keytrigger is on) is handled by setPhase()
-}
-
-void Lfo::setPhase(float newPhase) {
-  phase = newPhase;
-}
-
 void Lfo::updateParams() {
   phaseInc = (freq * CONTROL_RATE_SAMPLES) / sampleRate;
+}
+
+// ------ Setters ------ //
+void Lfo::setPhase(float newPhase) {
+  phase = newPhase;
 }
 
 void Lfo::setSampleRate(float newSampleRate) {
   sampleRate = newSampleRate;
 }
+
+// ------ Per sample ------ //
 float Lfo::nextSample() {
   float sample = 0.0f;
   float phaseTri = phase + 0.25f;
