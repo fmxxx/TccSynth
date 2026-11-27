@@ -164,6 +164,7 @@ void TccSynthAudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t da
 
   if (msg.getChannel() == BANK_CHANNEL) {
     int note = msg.getNoteNumber();
+    DBG(note);
     if (note >= BANK_MIN_NOTE && note <= BANK_MAX_NOTE) {
       bank = msg.getNoteNumber() - BANK_MIN_NOTE;
     }

@@ -48,6 +48,16 @@
   X(AMP_DECAY, "Amp Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.decaySecs, 21, 45)                          \
   X(AMP_SUSTAIN, "Amp Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", amp.sustainFctr, 22, 46)                      \
   X(AMP_RELEASE, "Amp Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", amp.releaseSecs, 23, 47)                    \
+\
+  /* ------ Mod Envelope ------ */                                                                                \
+  X(MODENV_OSC2_VOL, "Mod Env Osc 2 Volume", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.osc2VolPct, 24, 34)   \
+  X(MODENV_VOICE_FREQ, "Mod Env Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.voiceFreqPct, 25, 35) \
+  X(MODENV_OSC1_SHAPE, "Mod Env Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.shape1Pct, 26, 36)       \
+  X(MODENV_OSC2_SHAPE, "Mod Env Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.shape2Pct, 27, 37)       \
+  X(MODENV_ATTACK, "Mod Env Attack", 0.001f, 10.0f, 0.001f, 0.1f, 1.0f, "s", modEnv.attackSecs, 28, 29)           \
+  X(MODENV_DECAY, "Mod Env Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.decaySecs, 29, 30)                \
+  X(MODENV_SUSTAIN, "Mod Env Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", modEnv.sustainFctr, 30, 31)            \
+  X(MODENV_RELEASE, "Mod Env Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.releaseSecs, 31, 33)          \
                                                                                                                   \
   /* ------ LFO 1 ------ */                                                                                       \
   X(LFO1_FREQ, "LFO 1 Rate", 0.01f, 20.0f, 0.001f, 1.0f, 1.0f, "Hz", lfo1.hz, 32, 76)                             \
@@ -64,16 +74,6 @@
   X(LFO2_VOICE_FREQ, "LFO 2 Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.voiceFreqPct, 46, 26)       \
   X(LFO2_OSC2_SHAPE, "LFO 2 Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape2Pct, 45, 28)             \
   X(LFO2_OSC1_SHAPE, "LFO 2 Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", lfo2.shape1Pct, 44, 27)             \
-                                                                                                                  \
-  /* ------ Mod Envelope ------ */                                                                                \
-  X(MODENV_OSC2_VOL, "Mod Env Osc 2 Volume", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.osc2VolPct, 24, 34)   \
-  X(MODENV_VOICE_FREQ, "Mod Env Voice Freq", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.voiceFreqPct, 25, 35) \
-  X(MODENV_OSC1_SHAPE, "Mod Env Shape 1", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.shape1Pct, 26, 36)       \
-  X(MODENV_OSC2_SHAPE, "Mod Env Shape 2", -100.0f, 100.0f, 1.0f, 0.0f, 0.0f, "%", modEnv.shape2Pct, 27, 37)       \
-  X(MODENV_ATTACK, "Mod Env Attack", 0.001f, 10.0f, 0.001f, 0.1f, 1.0f, "s", modEnv.attackSecs, 28, 29)           \
-  X(MODENV_DECAY, "Mod Env Decay", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.decaySecs, 29, 30)                \
-  X(MODENV_SUSTAIN, "Mod Env Sustain", 0.0f, 1.0f, 0.001f, 0.5f, 0.5f, "", modEnv.sustainFctr, 30, 31)            \
-  X(MODENV_RELEASE, "Mod Env Release", 0.1f, 10.0f, 0.001f, 0.5f, 1.0f, "s", modEnv.releaseSecs, 31, 33)          \
                                                                                                                   \
   /* ------ Velocity ------ */                                                                                    \
   X(VEL_CUTOFF, "Vel Cutoff", -20000.0f, 20000.0f, 1.0f, 0.0f, 0.0f, "Hz", vel.cutoffHz, 48, 40)                  \
